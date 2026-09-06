@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản trị nội dung — Anh &amp; Em</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root {
+    --bg: #0d0f18; --panel: #171a29; --panel-2: #1f2338; --line: #2e3350;
+    --text: #eceef8; --text-dim: #9aa0c0; --gold: #ffb648; --gold-dim: #a97a34;
+    --rose: #ff6e97; --ok: #4ade80; --bad: #f2555a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0; padding: 24px; line-height: 1.5;
+  }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--text-dim); font-size: 14px; margin-bottom: 20px; }
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 4px; }
+  input[type=text], input[type=password], input[type=url], textarea, select {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 8px; padding: 8px 10px; font-size: 14px; font-family: inherit;
+  }
+  textarea { min-height: 64px; resize: vertical; }
+  button {
+    background: var(--gold); color: #241703; border: 0; border-radius: 8px; padding: 9px 16px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  button.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); }
+  button.danger { background: var(--bad); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  button + button { margin-left: 8px; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tab { background: var(--panel); border: 1px solid var(--line); color: var(--text-dim); }
+  .tab.active { background: var(--gold); color: #241703; border-color: var(--gold); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .entry { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px; background: var(--panel-2); }
+  .entry .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .entry .field { margin-bottom: 10px; }
+  .entry-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .entry-head b { font-size: 13px; color: var(--gold); }
+
+  .photo-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+  .photo-row input[type=text] { flex: 1; }
+  .photo-row img.pv { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); flex-shrink: 0; }
+
+  .status { font-size: 13px; margin-top: 10px; min-height: 18px; }
+  .status.ok { color: var(--ok); }
+  .status.bad { color: var(--bad); }
+  .muted { color: var(--text-dim); font-size: 12px; }
+  a { color: var(--gold); }
+  .filebtn { display: inline-block; font-size: 12px; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Quản trị nội dung — Anh &amp; Em</h1>
+  <p class="sub">Sửa Hành trình / Album ảnh / Khám phá. Bấm "Lưu" là commit thẳng lên GitHub, site live cập nhật sau ~30-60 giây.</p>
+
+  <div class="box">
+    <label>GitHub Personal Access Token (fine-grained, chỉ cần quyền Contents: Read &amp; Write cho đúng repo này)</label>
+    <div class="row">
+      <input type="password" id="tokenInput" placeholder="github_pat_..." style="flex:1;min-width:220px">
+      <button id="saveTokenBtn">Lưu token</button>
+      <button class="secondary" id="clearTokenBtn">Quên token</button>
+    </div>
+    <p class="muted" id="tokenStatus" style="margin-top:8px"></p>
+    <p class="muted">Token chỉ lưu trong trình duyệt này (localStorage), không gửi đi đâu khác ngoài api.github.com.
+      Tạo token tại <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> —
+      chọn repository <b>nguoi-yeu-minh</b>, quyền <b>Contents: Read and write</b>.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="journeys">Hành trình</button>
+    <button class="tab" data-tab="albums">Album ảnh</button>
+    <button class="tab" data-tab="discover">Khám phá</button>
+  </div>
+
+  <div class="panel active" id="panel-journeys">
+    <div id="journeyEntries"></div>
+    <button class="secondary" id="addJourneyBtn">+ Thêm hành trình</button>
+    <button id="saveJourneyBtn">Lưu hành trình</button>
+    <div class="status" id="journeyStatus"></div>
+  </div>
+
+  <div class="panel" id="panel-albums">
+    <div id="albumEntries"></div>
+    <button class="secondary" id="addAlbumBtn">+ Thêm album</button>
+    <button id="saveAlbumBtn">Lưu album</button>
+    <div class="status" id="albumStatus"></div>
+  </div>
+
+  <div class="panel" id="panel-discover">
+    <div id="discoverEntries"></div>
+    <button class="secondary" id="addDiscoverBtn">+ Thêm mục khám phá</button>
+    <button id="saveDiscoverBtn">Lưu khám phá</button>
+    <div class="status" id="discoverStatus"></div>
+  </div>
+
+  <p class="muted">Xem site: <a href="../index.html" target="_blank" rel="noopener">index.html</a> ·
+    Kiểm build: <a href="https://github.com/NguyenThaiVietLong/nguoi-yeu-minh/actions" target="_blank" rel="noopener">GitHub Actions</a></p>
+</div>
+
+<script>
+(function () {
+  var OWNER = 'NguyenThaiVietLong';
+  var REPO = 'nguoi-yeu-minh';
+  var BRANCH = 'master';
+  var API = 'https://api.github.com/repos/' + OWNER + '/' + REPO;
+  var TOKEN_KEY = 'cms_gh_token';
+
+  /* ---------------- token ---------------- */
+  function getToken() { return localStorage.getItem(TOKEN_KEY) || ''; }
+  function setToken(t) { localStorage.setItem(TOKEN_KEY, t); }
+  function clearToken() { localStorage.removeItem(TOKEN_KEY); }
+  function tokenStatusEl() { return document.getElementById('tokenStatus'); }
+  function refreshTokenStatus() {
+    var t = getToken();
+    tokenStatusEl().textContent = t ? '✓ Đã lưu token trong trình duyệt này.' : 'Chưa có token — nhập token ở trên rồi bấm Lưu.';
+  }
+  document.getElementById('saveTokenBtn').addEventListener('click', function () {
+    var v = document.getElementById('tokenInput').value.trim();
+    if (!v) return;
+    setToken(v);
+    document.getElementById('tokenInput').value = '';
+    refreshTokenStatus();
+  });
+  document.getElementById('clearTokenBtn').addEventListener('click', function () {
+    clearToken();
+    refreshTokenStatus();
+  });
+  refreshTokenStatus();
+
+  /* ---------------- GitHub Contents API ---------------- */
+  function b64EncodeUtf8(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function b64DecodeUtf8(b64) {
+    return decodeURIComponent(escape(atob(b64.replace(/\n/g, ''))));
+  }
+
+  function apiFetch(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({
+      'Authorization': 'Bearer ' + getToken(),
+      'Accept': 'application/vnd.github+json'
+    }, opts.headers || {});
+    return fetch(API + path, opts);
+  }
+
+  // Trả về { json, sha } — sha=null nếu file chưa tồn tại (lần đầu tạo)
+  function getFile(path) {
+    return apiFetch('/contents/' + path + '?ref=' + BRANCH).then(function (r) {
+      if (r.status === 404) return { json: [], sha: null };
+      if (!r.ok) return r.json().then(function (e) { throw new Error(e.message || ('GET ' + path + ' lỗi')); });
+      return r.json().then(function (data) {
+        return { json: JSON.parse(b64DecodeUtf8(data.content)), sha: data.sha };
+      });
+    });
+  }
+
+  function putFile(path, obj, sha, message) {
+    var body = {
+      message: message,
+      content: b64EncodeUtf8(JSON.stringify(obj, null, 2)),
+      branch: BRANCH
+    };
+    if (sha) body.sha = sha;
+    return apiFetch('/contents/' + path, {
+      method: 'PUT',
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      if (!r.ok) return r.json().then(function (e) { throw new Error(e.message || ('Lưu ' + path + ' thất bại')); });
+      return r.json();
+    });
+  }
+
+  function uploadImageFile(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('Không đọc được file ảnh')); };
+      reader.onload = function () {
+        var b64 = reader.result.split(',')[1];
+        var safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+        var path = 'images/uploads/' + Date.now() + '-' + safe;
+        apiFetch('/contents/' + path, {
+          method: 'PUT',
+          body: JSON.stringify({ message: 'Upload ảnh: ' + safe, content: b64, branch: BRANCH })
+        }).then(function (r) {
+          if (!r.ok) return r.json().then(function (e) { throw new Error(e.message || 'Upload ảnh thất bại'); });
+          return r.json();
+        }).then(function () { resolve(path); })['catch'](reject);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function wireUploadButton(btn, onDone, statusEl) {
+    btn.addEventListener('click', function () {
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = function () {
+        var f = input.files[0];
+        if (!f) return;
+        if (!getToken()) { alert('Nhập token trước đã.'); return; }
+        statusEl.textContent = 'Đang tải ảnh lên…';
+        uploadImageFile(f).then(function (path) {
+          statusEl.textContent = '';
+          onDone(path);
+        })['catch'](function (e) { statusEl.textContent = 'Lỗi upload: ' + e.message; });
+      };
+      input.click();
+    });
+  }
+
+  /* ---------------- tabs ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+    t.addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (x) { x.classList.remove('active'); });
+      Array.prototype.forEach.call(document.querySelectorAll('.panel'), function (x) { x.classList.remove('active'); });
+      t.classList.add('active');
+      document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+    });
+  });
+
+  function requireToken() {
+    if (!getToken()) { alert('Nhập và lưu GitHub token ở trên trước.'); return false; }
+    return true;
+  }
+  function setStatus(el, msg, ok) {
+    el.textContent = msg;
+    el.className = 'status' + (ok === true ? ' ok' : ok === false ? ' bad' : '');
+  }
+
+  /* ================= HÀNH TRÌNH ================= */
+  var journeyData = [], journeySha = null;
+  var albumListForSelect = [];
+
+  function renderJourneyEntries() {
+    var root = document.getElementById('journeyEntries');
+    root.innerHTML = journeyData.map(function (j, i) {
+      var albumOpts = '<option value="">— không gắn album —</option>' + albumListForSelect.map(function (a) {
+        return '<option value="' + a.id + '"' + (j.albumId === a.id ? ' selected' : '') + '>' + a.title + '</option>';
+      }).join('');
+      return '' +
+        '<div class="entry" data-i="' + i + '">' +
+          '<div class="entry-head"><b>' + (j.dateLabel || j.date || 'Hành trình #' + (i + 1)) + '</b>' +
+            '<button class="danger" data-act="del">Xóa</button></div>' +
+          '<div class="grid2">' +
+            '<div class="field"><label>Ngày (YYYY-MM-DD)</label><input type="text" data-f="date" value="' + (j.date || '') + '"></div>' +
+            '<div class="field"><label>Nhãn ngày hiển thị</label><input type="text" data-f="dateLabel" value="' + (j.dateLabel || '') + '"></div>' +
+          '</div>' +
+          '<div class="field"><label>Tiêu đề</label><input type="text" data-f="title" value="' + (j.title || '') + '"></div>' +
+          '<div class="field"><label>Nội dung</label><textarea data-f="content">' + (j.content || '') + '</textarea></div>' +
+          '<div class="field"><label>Ảnh đại diện (đường dẫn)</label>' +
+            '<div class="photo-row"><input type="text" data-f="cover" value="' + (j.cover || '') + '">' +
+            '<button class="secondary filebtn" data-act="upload-cover">Tải ảnh lên</button></div></div>' +
+          '<div class="field"><label>Link album ảnh</label><select data-f="albumId">' + albumOpts + '</select></div>' +
+        '</div>';
+    }).join('') || '<p class="muted">Chưa có hành trình nào. Bấm "+ Thêm hành trình".</p>';
+
+    Array.prototype.forEach.call(root.querySelectorAll('.entry'), function (entryEl) {
+      var i = Number(entryEl.dataset.i);
+      Array.prototype.forEach.call(entryEl.querySelectorAll('[data-f]'), function (f) {
+        f.addEventListener('input', function () { journeyData[i][f.dataset.f] = f.value; });
+        f.addEventListener('change', function () { journeyData[i][f.dataset.f] = f.value; });
+      });
+      entryEl.querySelector('[data-act=del]').addEventListener('click', function () {
+        journeyData.splice(i, 1);
+        renderJourneyEntries();
+      });
+      wireUploadButton(entryEl.querySelector('[data-act=upload-cover]'), function (path) {
+        journeyData[i].cover = path;
+        renderJourneyEntries();
+      }, document.getElementById('journeyStatus'));
+    });
+  }
+
+  document.getElementById('addJourneyBtn').addEventListener('click', function () {
+    journeyData.push({ id: 'j-' + Date.now(), date: '', dateLabel: '', title: '', content: '', cover: '', albumId: null });
+    renderJourneyEntries();
+  });
+
+  document.getElementById('saveJourneyBtn').addEventListener('click', function () {
+    if (!requireToken()) return;
+    var el = document.getElementById('journeyStatus');
+    setStatus(el, 'Đang lưu…');
+    putFile('data/journeys.json', journeyData, journeySha, 'Cập nhật hành trình qua admin')
+      .then(function (res) { journeySha = res.content.sha; setStatus(el, '✓ Đã lưu. Site sẽ cập nhật sau ~30-60 giây.', true); })
+      ['catch'](function (e) { setStatus(el, '✗ ' + e.message, false); });
+  });
+
+  /* ================= ALBUM ================= */
+  var albumData = [], albumSha = null;
+
+  function renderAlbumEntries() {
+    var root = document.getElementById('albumEntries');
+    root.innerHTML = albumData.map(function (a, i) {
+      var photosHtml = (a.photos || []).map(function (p, pi) {
+        return '<div class="photo-row" data-pi="' + pi + '">' +
+          (p.url ? '<img class="pv" src="../' + p.url + '" alt="">' : '<span class="pv"></span>') +
+          '<input type="text" data-pf="url" placeholder="đường dẫn ảnh" value="' + (p.url || '') + '">' +
+          '<input type="text" data-pf="caption" placeholder="chú thích" value="' + (p.caption || '') + '">' +
+          '<button class="secondary filebtn" data-pact="upload">Tải lên</button>' +
+          '<button class="danger filebtn" data-pact="del">Xóa</button>' +
+        '</div>';
+      }).join('');
+      return '' +
+        '<div class="entry" data-i="' + i + '">' +
+          '<div class="entry-head"><b>' + (a.title || 'Album #' + (i + 1)) + '</b>' +
+            '<button class="danger" data-act="del">Xóa album</button></div>' +
+          '<div class="field"><label>Tên album</label><input type="text" data-f="title" value="' + (a.title || '') + '"></div>' +
+          '<div class="field"><label>Chủ đề / mô tả</label><textarea data-f="theme">' + (a.theme || '') + '</textarea></div>' +
+          '<label>Ảnh trong album</label>' +
+          '<div class="photos">' + photosHtml + '</div>' +
+          '<button class="secondary filebtn" data-act="addphoto">+ Thêm ảnh (dán đường dẫn)</button>' +
+          '<button class="secondary filebtn" data-act="uploadphoto">+ Tải ảnh mới lên</button>' +
+        '</div>';
+    }).join('') || '<p class="muted">Chưa có album nào. Bấm "+ Thêm album".</p>';
+
+    Array.prototype.forEach.call(root.querySelectorAll('.entry'), function (entryEl) {
+      var i = Number(entryEl.dataset.i);
+      Array.prototype.forEach.call(entryEl.querySelectorAll('[data-f]'), function (f) {
+        f.addEventListener('input', function () { albumData[i][f.dataset.f] = f.value; });
+      });
+      entryEl.querySelector('[data-act=del]').addEventListener('click', function () {
+        albumData.splice(i, 1); renderAlbumEntries();
+      });
+      entryEl.querySelector('[data-act=addphoto]').addEventListener('click', function () {
+        albumData[i].photos = albumData[i].photos || [];
+        albumData[i].photos.push({ id: 'p-' + Date.now(), url: '', caption: '' });
+        renderAlbumEntries();
+      });
+      wireUploadButton(entryEl.querySelector('[data-act=uploadphoto]'), function (path) {
+        albumData[i].photos = albumData[i].photos || [];
+        albumData[i].photos.push({ id: 'p-' + Date.now(), url: path, caption: '' });
+        renderAlbumEntries();
+      }, document.getElementById('albumStatus'));
+
+      Array.prototype.forEach.call(entryEl.querySelectorAll('.photo-row'), function (rowEl) {
+        var pi = Number(rowEl.dataset.pi);
+        Array.prototype.forEach.call(rowEl.querySelectorAll('[data-pf]'), function (f) {
+          f.addEventListener('input', function () { albumData[i].photos[pi][f.dataset.pf] = f.value; });
+        });
+        rowEl.querySelector('[data-pact=del]').addEventListener('click', function () {
+          albumData[i].photos.splice(pi, 1); renderAlbumEntries();
+        });
+        wireUploadButton(rowEl.querySelector('[data-pact=upload]'), function (path) {
+          albumData[i].photos[pi].url = path; renderAlbumEntries();
+        }, document.getElementById('albumStatus'));
+      });
+    });
+  }
+
+  document.getElementById('addAlbumBtn').addEventListener('click', function () {
+    albumData.push({ id: 'a-' + Date.now(), title: '', theme: '', photos: [] });
+    renderAlbumEntries();
+  });
+
+  document.getElementById('saveAlbumBtn').addEventListener('click', function () {
+    if (!requireToken()) return;
+    var el = document.getElementById('albumStatus');
+    setStatus(el, 'Đang lưu…');
+    putFile('data/albums.json', albumData, albumSha, 'Cập nhật album qua admin')
+      .then(function (res) {
+        albumSha = res.content.sha;
+        albumListForSelect = albumData.map(function (a) { return { id: a.id, title: a.title }; });
+        renderJourneyEntries();
+        setStatus(el, '✓ Đã lưu. Site sẽ cập nhật sau ~30-60 giây.', true);
+      })
+      ['catch'](function (e) { setStatus(el, '✗ ' + e.message, false); });
+  });
+
+  /* ================= KHÁM PHÁ ================= */
+  var discoverData = [], discoverSha = null;
+
+  function renderDiscoverEntries() {
+    var root = document.getElementById('discoverEntries');
+    root.innerHTML = discoverData.map(function (d, i) {
+      return '' +
+        '<div class="entry" data-i="' + i + '">' +
+          '<div class="entry-head"><b>' + (d.title || 'Mục #' + (i + 1)) + '</b>' +
+            '<button class="danger" data-act="del">Xóa</button></div>' +
+          '<div class="grid2">' +
+            '<div class="field"><label>Icon (emoji)</label><input type="text" data-f="icon" value="' + (d.icon || '') + '"></div>' +
+            '<div class="field"><label>Tag nhỏ</label><input type="text" data-f="tag" value="' + (d.tag || '') + '"></div>' +
+          '</div>' +
+          '<div class="field"><label>Tiêu đề</label><input type="text" data-f="title" value="' + (d.title || '') + '"></div>' +
+          '<div class="field"><label>Nội dung</label><textarea data-f="content">' + (d.content || '') + '</textarea></div>' +
+          '<div class="field"><label>Ảnh đính kèm (không bắt buộc)</label>' +
+            '<div class="photo-row"><input type="text" data-f="image" value="' + (d.image || '') + '">' +
+            '<button class="secondary filebtn" data-act="upload">Tải ảnh lên</button></div></div>' +
+          '<div class="grid2">' +
+            '<div class="field"><label>Link đến (trang/URL)</label><input type="text" data-f="link" value="' + (d.link || '') + '"></div>' +
+            '<div class="field"><label>Chữ trên nút</label><input type="text" data-f="linkLabel" value="' + (d.linkLabel || '') + '"></div>' +
+          '</div>' +
+        '</div>';
+    }).join('') || '<p class="muted">Chưa có mục nào. Bấm "+ Thêm mục khám phá".</p>';
+
+    Array.prototype.forEach.call(root.querySelectorAll('.entry'), function (entryEl) {
+      var i = Number(entryEl.dataset.i);
+      Array.prototype.forEach.call(entryEl.querySelectorAll('[data-f]'), function (f) {
+        f.addEventListener('input', function () { discoverData[i][f.dataset.f] = f.value; });
+      });
+      entryEl.querySelector('[data-act=del]').addEventListener('click', function () {
+        discoverData.splice(i, 1); renderDiscoverEntries();
+      });
+      wireUploadButton(entryEl.querySelector('[data-act=upload]'), function (path) {
+        discoverData[i].image = path; renderDiscoverEntries();
+      }, document.getElementById('discoverStatus'));
+    });
+  }
+
+  document.getElementById('addDiscoverBtn').addEventListener('click', function () {
+    discoverData.push({ id: 'd-' + Date.now(), icon: '✨', tag: '', title: '', content: '', image: '', link: '', linkLabel: 'Xem thêm' });
+    renderDiscoverEntries();
+  });
+
+  document.getElementById('saveDiscoverBtn').addEventListener('click', function () {
+    if (!requireToken()) return;
+    var el = document.getElementById('discoverStatus');
+    setStatus(el, 'Đang lưu…');
+    putFile('data/discover.json', discoverData, discoverSha, 'Cập nhật khám phá qua admin')
+      .then(function (res) { discoverSha = res.content.sha; setStatus(el, '✓ Đã lưu. Site sẽ cập nhật sau ~30-60 giây.', true); })
+      ['catch'](function (e) { setStatus(el, '✗ ' + e.message, false); });
+  });
+
+  /* ================= LOAD BAN ĐẦU ================= */
+  Promise.all([
+    getFile('data/journeys.json'),
+    getFile('data/albums.json'),
+    getFile('data/discover.json')
+  ]).then(function (res) {
+    journeyData = res[0].json; journeySha = res[0].sha;
+    albumData = res[1].json; albumSha = res[1].sha;
+    discoverData = res[2].json; discoverSha = res[2].sha;
+    albumListForSelect = albumData.map(function (a) { return { id: a.id, title: a.title }; });
+    renderJourneyEntries();
+    renderAlbumEntries();
+    renderDiscoverEntries();
+  })['catch'](function (e) {
+    document.getElementById('journeyEntries').innerHTML = '<p class="muted">Không tải được dữ liệu (' + e.message + '). Kiểm tra token rồi tải lại trang.</p>';
+  });
+})();
+</script>
+</body>
+</html>

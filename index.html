@@ -349,13 +349,32 @@
   .card h3 { font-size: 24px; font-weight: 600; margin-bottom: 7px; }
   .card p { color: var(--text-dim); font-size: 17px; flex: 1; }
   .card .go { margin-top: 15px; font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .1em; color: var(--gold); }
+  .card-thumb { margin: -24px -22px 14px; border-radius: 16px 16px 0 0; overflow: hidden; border-bottom: 1px solid var(--line); }
+  .card-thumb img { width: 100%; max-height: 160px; object-fit: cover; display: block; }
+
+  /* ---- journey -> album link ---- */
+  .tl-album-link {
+    display: inline-block; margin-top: 10px; font-family: 'Space Mono', monospace;
+    font-size: 12px; letter-spacing: .08em; color: var(--gold); text-decoration: none; border-bottom: 1px dashed var(--gold-dim);
+  }
+  .tl-album-link:hover { color: #fff; }
 
   /* ---- album ---- */
   .album { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
-  .ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); }
+  .ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); position: relative; }
   .ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
   .ph:hover img { transform: scale(1.06); }
+  .ph .cap {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px;
+    font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #fff;
+    background: linear-gradient(0deg, rgba(0,0,0,.65), transparent);
+  }
   .album-empty { text-align: center; color: var(--text-dim); font-style: italic; }
+  .album-back {
+    display: inline-block; margin-bottom: 22px; font-family: 'Space Mono', monospace;
+    font-size: 12px; letter-spacing: .1em; color: var(--gold-dim); text-decoration: none;
+  }
+  .album-back:hover { color: var(--gold); }
 
   /* ---- letter ---- */
   .letter {
@@ -471,40 +490,7 @@
 
     <div class="timeline">
 
-      <div class="tl-item">
-        <div class="when">16 · 08 · 2026</div>
-        <h3>Bắt đầu từ Bumble</h3>
-        <p>Quẹt phải rồi phát hiện ra quá trời điểm chung — từ những ngày Đoàn – Hội cho tới hàng loạt chuyện trùng hợp đến khó tin. Nói chuyện một lúc là biết người này không giống mấy cuộc trò chuyện khác.</p>
-        <div class="tl-photo" data-photo><img src="images/tl1.jpg" alt=""></div>
-      </div>
-
-      <div class="tl-item">
-        <div class="when">18 · 08 · 2026</div>
-        <h3>Gửi Proposal</h3>
-        <p>Không hoa, không thư tay — anh gửi hẳn một bản đề xuất có mã tài liệu, có Plan A, Plan B và ô ký duyệt. Cách tỏ ý kỳ lạ, nhưng là cách rất anh.</p>
-        <div class="tl-photo" data-photo><img src="images/tl2.jpg" alt=""></div>
-      </div>
-
-      <div class="tl-item">
-        <div class="when">21 · 08 · 2026</div>
-        <h3>Bún bò, cà phê Trạm Do, và 1 giờ sáng</h3>
-        <p>Đi ăn bún bò rồi qua Trạm Do ngồi làm việc. Làm được bao nhiêu không nhớ, chỉ nhớ deep talk tới 1 giờ sáng mà vẫn còn chuyện để nói. Hoá ra hợp nhau thật.</p>
-        <div class="tl-photo" data-photo><img src="images/tl3.jpg" alt=""></div>
-      </div>
-
-      <div class="tl-item">
-        <div class="when">22 · 08 · 2026</div>
-        <h3>Đi nhậu, và đi bão ké</h3>
-        <p>Qua rước em, đi nhậu, rồi chở em về. Tối đó Việt Nam thắng, cả thành phố đổ ra đường — mình đi bão ké một đoạn. Ồn ào, đông đúc, mà vui thiệt.</p>
-        <div class="tl-photo" data-photo><img src="images/tl4.jpg" alt=""></div>
-      </div>
-
-      <div class="tl-item">
-        <div class="when">23 · 08 · 2026</div>
-        <h3>First date</h3>
-        <p>Cà phê làm việc, xem phim, rồi ăn trong Gigamall. Gọi là buổi hẹn đầu tiên cho trang trọng, chứ thật ra mình đã thân từ mấy hôm trước rồi.</p>
-        <div class="tl-photo" data-photo><img src="images/tl5.jpg" alt=""></div>
-      </div>
+      <div id="journeyList"></div>
 
       <div class="tl-item tl-future" id="futureItem">
         <div class="when">Đang viết tiếp…</div>
@@ -536,17 +522,8 @@
       <h2>Ảnh</h2>
       <p>Vài khoảnh khắc giữ lại được</p>
     </div>
-    <div class="album" id="albumGrid">
-      <div class="ph" data-photo><img src="images/album1.jpg" alt=""></div>
-      <div class="ph" data-photo><img src="images/album2.jpg" alt=""></div>
-      <div class="ph" data-photo><img src="images/album3.jpg" alt=""></div>
-      <div class="ph" data-photo><img src="images/album4.jpg" alt=""></div>
-      <div class="ph" data-photo><img src="images/album5.jpg" alt=""></div>
-      <div class="ph" data-photo><img src="images/album6.jpg" alt=""></div>
-      <div class="ph" data-photo><img src="images/album7.jpg" alt=""></div>
-      <div class="ph" data-photo><img src="images/album8.jpg" alt=""></div>
-    </div>
-    <p class="album-empty" id="albumEmpty" style="display:none">Ảnh sẽ được thêm vào sau…</p>
+    <div class="cards" id="albumCardsGrid"></div>
+    <p class="album-empty" id="albumEmpty" style="display:none">Album sẽ được thêm vào sau…</p>
   </section>
 
   <div class="rule"></div>
@@ -558,47 +535,7 @@
       <p>Ba góc nhỏ khác — bấm vào để mở</p>
     </div>
 
-    <div class="cards">
-      <a class="card" href="ke-hoach-chu-nhat.html">
-        <div class="ico">📄</div>
-        <div class="tag">Văn bản · PROP-2026/CN-01</div>
-        <h3>Kế hoạch một ngày Chủ nhật</h3>
-        <p>Bản đề xuất chính thức về một ngày trọn vẹn — có Plan A, Plan B, điều khoản và ô ký duyệt. Vẫn đang chờ Bên B phê duyệt.</p>
-        <div class="go">Mở tài liệu →</div>
-      </a>
-
-      <a class="card" href="ke-hoach-thu-sau.html">
-        <div class="ico">📄</div>
-        <div class="tag">Văn bản · PROP-2026/T6-02</div>
-        <h3>Kế hoạch buổi tối Thứ 6</h3>
-        <p>Ăn tối rồi cà phê, hoặc ăn tối rồi ra công viên ngồi nói chuyện — Plan A / Plan B, Bên B chọn tại chỗ.</p>
-        <div class="go">Mở tài liệu →</div>
-      </a>
-
-      <a class="card" href="ke-hoach-thu-bay.html">
-        <div class="ico">📄</div>
-        <div class="tag">Văn bản · PROP-2026/T7-02</div>
-        <h3>Kế hoạch ngày Thứ 7</h3>
-        <p>Trọn ngày từ bến xe đến bến xe — chỉ khác nhau ở quán cà phê: Ngõ Quán hay Coffee In Bed.</p>
-        <div class="go">Mở tài liệu →</div>
-      </a>
-
-      <a class="card" href="game-duoi-bat.html">
-        <div class="ico">💘</div>
-        <div class="tag">Trò chơi · 5 giây</div>
-        <h3>Thử Thách Trái Tim</h3>
-        <p>Bắt lấy trái tim đang chạy trốn trong 5 giây. Nghe dễ thôi… nhưng nút này nhõng nhẽo lắm, cứ tới gần là né.</p>
-        <div class="go">Chơi thử →</div>
-      </a>
-
-      <a class="card" href="vong-quay-dem.html">
-        <div class="ico">🎡</div>
-        <div class="tag">Số phận · sau 0h</div>
-        <h3>Vòng Quay Nửa Đêm</h3>
-        <p>Mười cửa duyên, một cái kết. Khi cả hai không biết tối nay đi đâu, cứ để ông tơ bà nguyệt quyết định giúp.</p>
-        <div class="go">Quay ngay →</div>
-      </a>
-    </div>
+    <div class="cards" id="discoverGrid"></div>
   </section>
 
   <div class="rule"></div>
@@ -724,52 +661,30 @@ var NOTES = [
 
 /* ---------------- ẩn ô ảnh chưa có file ----------------
    Ô nào không tải được ảnh thì ẩn đi, không để vỡ layout.
-   Nếu KHÔNG có ảnh album nào thì ẩn luôn cả mục "Ảnh". */
-(function () {
-  var boxes = document.querySelectorAll('[data-photo]');
-  var albumBoxes = document.querySelectorAll('.album [data-photo]');
-  var albumTotal = albumBoxes.length;
-  var albumDone = 0, albumOk = 0;
-
-  function albumCheck() {
-    if (albumDone < albumTotal) return;
-    var sec = document.getElementById('album');
-    if (albumOk === 0 && sec) sec.style.display = 'none';
-  }
-
+   Dùng lại được cho ảnh chèn động (timeline) — gọi wirePhotoBoxes(root) sau khi render. */
+function wirePhotoBoxes(root) {
+  var boxes = (root || document).querySelectorAll('[data-photo]');
   Array.prototype.forEach.call(boxes, function (box) {
     var img = box.querySelector('img');
-    var isAlbum = box.parentNode && box.parentNode.classList.contains('album');
+    if (!img) return;
     var settled = false;
 
     box.style.display = 'none';   // ẩn trước, tải được mới hiện
 
-    function ok() {
-      if (settled) return;
-      settled = true;
-      box.style.display = '';
-      if (isAlbum) { albumDone++; albumOk++; albumCheck(); }
-    }
-    function fail() {
-      if (settled) return;
-      settled = true;
-      box.style.display = 'none';
-      if (isAlbum) { albumDone++; albumCheck(); }
-    }
+    function ok() { if (!settled) { settled = true; box.style.display = ''; } }
+    function fail() { if (!settled) { settled = true; box.style.display = 'none'; } }
 
     img.addEventListener('load', function () {
       if (img.naturalWidth > 0) ok(); else fail();
     });
     img.addEventListener('error', fail);
 
-    // ảnh có sẵn trong cache thì hai sự kiện trên không bắn nữa
     if (img.complete) {
       if (img.naturalWidth > 0) ok(); else fail();
     }
   });
-
-  albumCheck();   // phòng khi trang không có ô album nào
-})();
+}
+wirePhotoBoxes(document);
 
 /* ---------------- starfield ---------------- */
 (function () {
@@ -846,21 +761,112 @@ var NOTES = [
   setInterval(tick, 1000);
 })();
 
-/* ---------------- timeline reveal ---------------- */
-(function () {
-  var items = document.querySelectorAll('.tl-item');
-  if (!('IntersectionObserver' in window)) {
-    Array.prototype.forEach.call(items, function (el) { el.classList.add('show'); });
-    return;
-  }
-  var io = new IntersectionObserver(function (entries) {
+/* ---------------- timeline reveal ----------------
+   Dùng lại được cho item chèn động — gọi wireReveal(root) sau khi render. */
+var wireReveal = (function () {
+  var hasIO = 'IntersectionObserver' in window;
+  var io = hasIO ? new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
       if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); }
     });
-  }, { threshold: .15 });
-  Array.prototype.forEach.call(items, function (el, i) {
-    el.style.transitionDelay = (i % 3) * 90 + 'ms';
-    io.observe(el);
+  }, { threshold: .15 }) : null;
+
+  return function (root) {
+    var items = (root || document).querySelectorAll('.tl-item');
+    Array.prototype.forEach.call(items, function (el, i) {
+      if (el.classList.contains('show') || el.dataset.revealWired) return;
+      el.dataset.revealWired = '1';
+      if (!hasIO) { el.classList.add('show'); return; }
+      el.style.transitionDelay = (i % 3) * 90 + 'ms';
+      io.observe(el);
+    });
+  };
+})();
+wireReveal(document);
+
+/* ---------------- nội dung động: hành trình / album / khám phá ----------------
+   Đọc từ data/*.json (do trang quản trị admin/index.html ghi ra) và render.
+   Sửa nội dung thì vào admin/index.html, không sửa trực tiếp ở đây. */
+(function () {
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function fetchJson(path) {
+    return fetch(path, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('load fail: ' + path);
+      return r.json();
+    })['catch'](function () { return []; });
+  }
+
+  function renderJourneys(journeys, albumsById) {
+    var list = document.getElementById('journeyList');
+    if (!list) return;
+    var sorted = journeys.slice().sort(function (a, b) { return (a.date || '').localeCompare(b.date || ''); });
+    list.innerHTML = sorted.map(function (j) {
+      var albumLink = (j.albumId && albumsById[j.albumId])
+        ? '<a class="tl-album-link" href="album.html?id=' + encodeURIComponent(j.albumId) + '">Xem album ảnh</a>'
+        : '';
+      var photo = j.cover ? '<div class="tl-photo" data-photo><img src="' + esc(j.cover) + '" alt=""></div>' : '';
+      return '<div class="tl-item">' +
+          '<div class="when">' + esc(j.dateLabel || j.date || '') + '</div>' +
+          '<h3>' + esc(j.title) + '</h3>' +
+          '<p>' + esc(j.content) + '</p>' +
+          photo + albumLink +
+        '</div>';
+    }).join('');
+    wirePhotoBoxes(list);
+    wireReveal(list);
+  }
+
+  function renderAlbumCards(albums) {
+    var grid = document.getElementById('albumCardsGrid');
+    var empty = document.getElementById('albumEmpty');
+    if (!grid) return;
+    if (!albums.length) { grid.style.display = 'none'; if (empty) empty.style.display = ''; return; }
+    grid.innerHTML = albums.map(function (a) {
+      var n = (a.photos || []).length;
+      return '<a class="card" href="album.html?id=' + encodeURIComponent(a.id) + '">' +
+          '<div class="ico">🖼️</div>' +
+          '<div class="tag">Album · ' + n + ' ảnh</div>' +
+          '<h3>' + esc(a.title) + '</h3>' +
+          '<p>' + esc(a.theme) + '</p>' +
+          '<div class="go">Xem album →</div>' +
+        '</a>';
+    }).join('');
+  }
+
+  function renderDiscover(items) {
+    var grid = document.getElementById('discoverGrid');
+    if (!grid) return;
+    grid.innerHTML = items.map(function (d) {
+      var thumb = d.image ? '<div class="card-thumb"><img src="' + esc(d.image) + '" alt=""></div>' : '';
+      var external = /^https?:\/\//i.test(d.link || '');
+      var attrs = external ? ' target="_blank" rel="noopener"' : '';
+      return '<a class="card" href="' + esc(d.link || '#') + '"' + attrs + '>' +
+          thumb +
+          '<div class="ico">' + esc(d.icon || '✨') + '</div>' +
+          '<div class="tag">' + esc(d.tag || '') + '</div>' +
+          '<h3>' + esc(d.title) + '</h3>' +
+          '<p>' + esc(d.content) + '</p>' +
+          '<div class="go">' + esc(d.linkLabel || 'Xem thêm') + ' →</div>' +
+        '</a>';
+    }).join('');
+  }
+
+  Promise.all([
+    fetchJson('data/journeys.json'),
+    fetchJson('data/albums.json'),
+    fetchJson('data/discover.json')
+  ]).then(function (res) {
+    var journeys = res[0] || [], albums = res[1] || [], discover = res[2] || [];
+    var albumsById = {};
+    albums.forEach(function (a) { albumsById[a.id] = a; });
+    renderJourneys(journeys, albumsById);
+    renderAlbumCards(albums);
+    renderDiscover(discover);
   });
 })();
 

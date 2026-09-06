@@ -1,0 +1,52 @@
+[
+  {
+    "id": "d-ke-hoach-cn",
+    "tag": "Văn bản · PROP-2026/CN-01",
+    "icon": "📄",
+    "title": "Kế hoạch một ngày Chủ nhật",
+    "content": "Bản đề xuất chính thức về một ngày trọn vẹn — có Plan A, Plan B, điều khoản và ô ký duyệt. Vẫn đang chờ Bên B phê duyệt.",
+    "image": "",
+    "link": "ke-hoach-chu-nhat.html",
+    "linkLabel": "Mở tài liệu"
+  },
+  {
+    "id": "d-ke-hoach-t6",
+    "tag": "Văn bản · PROP-2026/T6-02",
+    "icon": "📄",
+    "title": "Kế hoạch buổi tối Thứ 6",
+    "content": "Ăn tối rồi cà phê, hoặc ăn tối rồi ra công viên ngồi nói chuyện — Plan A / Plan B, Bên B chọn tại chỗ.",
+    "image": "",
+    "link": "ke-hoach-thu-sau.html",
+    "linkLabel": "Mở tài liệu"
+  },
+  {
+    "id": "d-ke-hoach-t7",
+    "tag": "Văn bản · PROP-2026/T7-02",
+    "icon": "📄",
+    "title": "Kế hoạch ngày Thứ 7",
+    "content": "Trọn ngày từ bến xe đến bến xe — chỉ khác nhau ở quán cà phê: Ngõ Quán hay Coffee In Bed.",
+    "image": "",
+    "link": "ke-hoach-thu-bay.html",
+    "linkLabel": "Mở tài liệu"
+  },
+  {
+    "id": "d-game-duoi-bat",
+    "tag": "Trò chơi · 5 giây",
+    "icon": "💘",
+    "title": "Thử Thách Trái Tim",
+    "content": "Bắt lấy trái tim đang chạy trốn trong 5 giây. Nghe dễ thôi… nhưng nút này nhõng nhẽo lắm, cứ tới gần là né.",
+    "image": "",
+    "link": "game-duoi-bat.html",
+    "linkLabel": "Chơi thử"
+  },
+  {
+    "id": "d-vong-quay",
+    "tag": "Số phận · sau 0h",
+    "icon": "🎡",
+    "title": "Vòng Quay Nửa Đêm",
+    "content": "Mười cửa duyên, một cái kết. Khi cả hai không biết tối nay đi đâu, cứ để ông tơ bà nguyệt quyết định giúp.",
+    "image": "",
+    "link": "vong-quay-dem.html",
+    "linkLabel": "Quay ngay"
+  }
+]

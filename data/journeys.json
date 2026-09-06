@@ -1,0 +1,47 @@
+[
+  {
+    "id": "j-2026-08-16",
+    "date": "2026-08-16",
+    "dateLabel": "16 · 08 · 2026",
+    "title": "Bắt đầu từ Bumble",
+    "content": "Quẹt phải rồi phát hiện ra quá trời điểm chung — từ những ngày Đoàn – Hội cho tới hàng loạt chuyện trùng hợp đến khó tin. Nói chuyện một lúc là biết người này không giống mấy cuộc trò chuyện khác.",
+    "cover": "images/tl1.jpg",
+    "albumId": null
+  },
+  {
+    "id": "j-2026-08-18",
+    "date": "2026-08-18",
+    "dateLabel": "18 · 08 · 2026",
+    "title": "Gửi Proposal",
+    "content": "Không hoa, không thư tay — anh gửi hẳn một bản đề xuất có mã tài liệu, có Plan A, Plan B và ô ký duyệt. Cách tỏ ý kỳ lạ, nhưng là cách rất anh.",
+    "cover": "images/tl2.jpg",
+    "albumId": null
+  },
+  {
+    "id": "j-2026-08-21",
+    "date": "2026-08-21",
+    "dateLabel": "21 · 08 · 2026",
+    "title": "Bún bò, cà phê Trạm Do, và 1 giờ sáng",
+    "content": "Đi ăn bún bò rồi qua Trạm Do ngồi làm việc. Làm được bao nhiêu không nhớ, chỉ nhớ deep talk tới 1 giờ sáng mà vẫn còn chuyện để nói. Hoá ra hợp nhau thật.",
+    "cover": "images/tl3.jpg",
+    "albumId": null
+  },
+  {
+    "id": "j-2026-08-22",
+    "date": "2026-08-22",
+    "dateLabel": "22 · 08 · 2026",
+    "title": "Đi nhậu, và đi bão ké",
+    "content": "Qua rước em, đi nhậu, rồi chở em về. Tối đó Việt Nam thắng, cả thành phố đổ ra đường — mình đi bão ké một đoạn. Ồn ào, đông đúc, mà vui thiệt.",
+    "cover": "images/tl4.jpg",
+    "albumId": null
+  },
+  {
+    "id": "j-2026-08-23",
+    "date": "2026-08-23",
+    "dateLabel": "23 · 08 · 2026",
+    "title": "First date",
+    "content": "Cà phê làm việc, xem phim, rồi ăn trong Gigamall. Gọi là buổi hẹn đầu tiên cho trang trọng, chứ thật ra mình đã thân từ mấy hôm trước rồi.",
+    "cover": "images/tl5.jpg",
+    "albumId": "a-nhung-ngay-dau"
+  }
+]

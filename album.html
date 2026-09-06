@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Album ảnh — Anh &amp; Em</title>
+<meta name="google" content="notranslate">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f18; --panel: #171a29; --panel-2: #1f2338; --line: #2e3350;
+    --text: #eceef8; --text-dim: #9aa0c0; --gold: #ffb648; --gold-dim: #a97a34;
+    --rose: #ff6e97; --rose-dim: #b34e6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Cormorant Garamond', 'Times New Roman', Times, serif;
+    font-size: 18px; line-height: 1.7; min-height: 100vh;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 48px clamp(18px,5vw,28px) 70px; }
+  .album-back {
+    display: inline-block; margin-bottom: 22px; font-family: 'Space Mono', monospace;
+    font-size: 12px; letter-spacing: .1em; color: var(--gold-dim); text-decoration: none;
+  }
+  .album-back:hover { color: var(--gold); }
+  .sec-head { text-align: center; margin-bottom: clamp(30px,6vw,48px); }
+  .sec-head h1 { font-size: clamp(28px,6vw,42px); font-weight: 600; margin-bottom: 8px; }
+  .sec-head p { color: var(--text-dim); font-style: italic; }
+  .album { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
+  .ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); position: relative; }
+  .ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
+  .ph:hover img { transform: scale(1.06); }
+  .ph .cap {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px;
+    font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #fff;
+    background: linear-gradient(0deg, rgba(0,0,0,.65), transparent);
+  }
+  .album-empty, .album-notfound { text-align: center; color: var(--text-dim); font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="album-back" href="index.html#album">&larr; Về trang chính</a>
+  <div class="sec-head">
+    <h1 id="albumTitle">Đang tải…</h1>
+    <p id="albumTheme"></p>
+  </div>
+  <div class="album" id="photoGrid"></div>
+  <p class="album-notfound" id="notFound" style="display:none">Không tìm thấy album này.</p>
+</div>
+
+<script>
+(function () {
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function wirePhotoBoxes(root) {
+    var boxes = root.querySelectorAll('[data-photo]');
+    Array.prototype.forEach.call(boxes, function (box) {
+      var img = box.querySelector('img');
+      if (!img) return;
+      var settled = false;
+      box.style.display = 'none';
+      function ok() { if (!settled) { settled = true; box.style.display = ''; } }
+      function fail() { if (!settled) { settled = true; box.style.display = 'none'; } }
+      img.addEventListener('load', function () { if (img.naturalWidth > 0) ok(); else fail(); });
+      img.addEventListener('error', fail);
+      if (img.complete) { if (img.naturalWidth > 0) ok(); else fail(); }
+    });
+  }
+
+  var id = new URLSearchParams(location.search).get('id');
+
+  fetch('data/albums.json', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (albums) {
+      var album = (albums || []).filter(function (a) { return a.id === id; })[0];
+      if (!album) {
+        document.getElementById('albumTitle').textContent = 'Album không tồn tại';
+        document.getElementById('notFound').style.display = '';
+        return;
+      }
+      document.title = album.title + ' — Anh & Em';
+      document.getElementById('albumTitle').textContent = album.title;
+      document.getElementById('albumTheme').textContent = album.theme || '';
+      var grid = document.getElementById('photoGrid');
+      var photos = album.photos || [];
+      if (!photos.length) {
+        grid.style.display = 'none';
+        document.getElementById('notFound').textContent = 'Album này chưa có ảnh nào.';
+        document.getElementById('notFound').style.display = '';
+        return;
+      }
+      grid.innerHTML = photos.map(function (p) {
+        var cap = p.caption ? '<div class="cap">' + esc(p.caption) + '</div>' : '';
+        return '<div class="ph" data-photo><img src="' + esc(p.url) + '" alt="">' + cap + '</div>';
+      }).join('');
+      wirePhotoBoxes(grid);
+    })
+    ['catch'](function () {
+      document.getElementById('albumTitle').textContent = 'Không tải được album';
+      document.getElementById('notFound').style.display = '';
+    });
+})();
+</script>
+</body>
+</html>
