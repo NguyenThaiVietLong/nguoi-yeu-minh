@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tờ trình (nghiêm túc 50%): Tối Thứ 6 đi đâu</title>
+<style>
+  :root{
+    --ink:#2b2118; --muted:#8a7a68; --line:#e8b98f; --line2:#f3ddc4;
+    --paper:#fff6e9; --card:#ffffff; --accent:#f2542d; --accent-soft:#ffe4d6;
+    --stamp:#d1495b; --gold:#c9822e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe Print','Comic Sans MS','Chalkboard SE',cursive,system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.7;font-size:16px}
+  img{display:block;max-width:100%}
+  .mono{font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(255,246,233,.94);backdrop-filter:blur(8px);border-bottom:2px dashed var(--line)}
+  nav .wrap{max-width:900px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  nav .doc-id{font-size:15px;letter-spacing:.03em;color:var(--muted)}
+  nav .doc-id b{color:var(--accent)}
+  nav .links{display:flex;gap:22px;font-size:15px}
+  nav .links a{color:var(--muted);text-decoration:none}
+  nav .links a:hover{color:var(--ink);text-decoration:underline}
+  @media(max-width:560px){nav .links{display:none}}
+
+  .sheet{max-width:820px;margin:0 auto;padding:0 28px}
+
+  header.cover{text-align:center;padding:56px 0 40px;border-bottom:3px dashed var(--accent);margin-bottom:6px;position:relative}
+  header.cover .badge{display:inline-block;background:var(--accent-soft);color:var(--accent);border:2px dashed var(--accent);border-radius:999px;padding:6px 18px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;transform:rotate(-2deg)}
+  header.cover h1{font-size:clamp(28px,6vw,42px);font-weight:700;line-height:1.2;margin-bottom:16px}
+  header.cover .sub{font-size:17px;color:var(--muted);max-width:560px;margin:0 auto}
+  .doubleline{border-bottom:2px dashed var(--line);margin-bottom:34px}
+
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:0;border:2px dashed var(--line);border-radius:16px;overflow:hidden;margin:34px 0;background:var(--card)}
+  .meta .cell{padding:14px 18px;border-right:1px dashed var(--line2);border-bottom:1px dashed var(--line2)}
+  .meta .cell:nth-child(2n){border-right:none}
+  .meta .cell .lb{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .meta .cell .vl{font-size:15px;font-weight:700}
+  @media(max-width:520px){.meta{grid-template-columns:1fr}.meta .cell{border-right:none}}
+
+  .parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:38px 0}
+  @media(max-width:600px){.parties{grid-template-columns:1fr;max-width:360px;margin-left:auto;margin-right:auto}}
+  .party{border:2px dashed var(--line);border-radius:16px;background:var(--card);padding:16px;transform:rotate(-.4deg)}
+  .party:nth-child(2){transform:rotate(.4deg)}
+  .party .role{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 3px}
+  .party .nm{font-size:19px;font-weight:700}
+  .party .ttl{font-size:14px;color:var(--muted)}
+
+  section.blk{padding:30px 0;border-bottom:2px dashed var(--line2)}
+  .blk h2{font-size:22px;font-weight:700;margin-bottom:6px;display:flex;align-items:baseline;gap:12px}
+  .blk h2 .num{font-size:15px;color:var(--accent);font-weight:700;min-width:34px}
+  .blk .lead{color:var(--muted);margin:0 0 20px 46px}
+  .blk .content{margin-left:46px}
+  @media(max-width:520px){.blk .lead,.blk .content{margin-left:0}}
+
+  .plan-toggle{display:flex;gap:10px;width:fit-content;margin-bottom:22px}
+  .plan-toggle button{font-family:inherit;background:var(--card);border:2px dashed var(--accent);border-radius:999px;padding:9px 22px;font-size:14px;font-weight:700;letter-spacing:.03em;color:var(--accent);cursor:pointer}
+  .plan-toggle button.active{background:var(--accent);border-style:solid;color:#fff}
+
+  table.schedule{width:100%;border-collapse:collapse;font-size:15px}
+  table.schedule th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 12px;border-bottom:2px solid var(--accent)}
+  table.schedule td{padding:14px 12px;border-bottom:1px dashed var(--line2);vertical-align:top}
+  table.schedule tr:last-child td{border-bottom:none}
+  table.schedule .t-time{font-weight:700;white-space:nowrap;width:90px;color:var(--accent)}
+  table.schedule .t-est{white-space:nowrap;width:110px;color:var(--muted);font-size:13px}
+  table.schedule .t-title{font-weight:700}
+  table.schedule .t-desc{color:var(--muted);font-size:14px;display:block;margin-top:2px}
+  .plan-pane{display:none}
+  .plan-pane.active{display:block}
+  .tbd{color:var(--gold);font-weight:700}
+
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .kpi .k{padding:18px;text-align:center;border:2px dashed var(--line);border-radius:14px;background:var(--card)}
+  .kpi .k .n{font-size:28px;font-weight:700;color:var(--accent)}
+  .kpi .k .l{font-size:13px;color:var(--muted);margin-top:4px}
+  @media(max-width:520px){.kpi{grid-template-columns:1fr}}
+
+  .terms{list-style:none;counter-reset:t}
+  .terms li{counter-increment:t;padding:11px 0 11px 40px;position:relative;border-bottom:1px dashed var(--line);font-size:15px}
+  .terms li:last-child{border-bottom:none}
+  .terms li:before{content:counter(t,decimal-leading-zero);position:absolute;left:0;top:11px;font-weight:700;color:var(--accent);font-size:14px}
+  .terms li b{color:var(--stamp)}
+
+  .note-row{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;border:2px dashed var(--accent);border-radius:16px;background:var(--accent-soft);padding:22px 24px}
+  @media(max-width:520px){.note-row{grid-template-columns:1fr}}
+  .note-row .badge2{font-size:26px}
+
+  .signature{margin:44px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  @media(max-width:520px){.signature{grid-template-columns:1fr;gap:28px}}
+  .signature .sig .line{border-bottom:2px dashed var(--ink);height:44px;margin-bottom:8px;display:flex;align-items:flex-end;overflow:hidden}
+  .signature .sig .nm{font-weight:700}
+  .signature .sig .rl{font-size:13px;color:var(--muted)}
+  .signature .sig .scr{font-family:'Brush Script MT','Segoe Script',cursive;font-size:26px;color:var(--accent);transform:rotate(-4deg);position:relative;left:8px;bottom:2px}
+  .sig-svg{width:200px;height:60px}
+  .sig-path{stroke:var(--accent);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:600;stroke-dashoffset:600}
+  .sig-path.draw{animation:drawsig 1.3s ease forwards}
+  @keyframes drawsig{to{stroke-dashoffset:0}}
+
+  .approve{text-align:center;padding:44px 0 20px}
+  .approve .btn{font-family:inherit;display:inline-block;padding:15px 40px;background:var(--accent);color:#fff;border:none;border-radius:999px;font-size:17px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:background .2s,transform .2s}
+  .approve .btn:hover{background:#d6431f;transform:scale(1.03)}
+  .approve .hint{font-size:13px;color:var(--muted);margin-top:14px}
+  .approve .stamp{display:inline-block;margin-top:32px;border:4px dashed var(--stamp);border-radius:999px;color:var(--stamp);padding:14px 36px;font-size:26px;font-weight:700;letter-spacing:.1em;transform:rotate(-8deg);opacity:0;transition:opacity .3s}
+  .approve .stamp.show{opacity:1}
+
+  footer{text-align:center;padding:30px 28px 48px;color:var(--muted);font-size:13px;border-top:2px dashed var(--line);max-width:820px;margin:20px auto 0}
+  .doc-id{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .home-link{text-decoration:none;color:var(--accent);border:2px dashed var(--accent);
+    border-radius:999px;padding:4px 12px;font-size:13px;background:#fff;transition:background .2s}
+  .home-link:hover{background:var(--accent-soft)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="doc-id mono"><a class="home-link" href="index.html">&larr; Trang chủ</a><span class="docsep">DOC &middot; <b>PROP-2026/T6-02</b></span></div>
+    <div class="links">
+      <a href="#scope">Kế hoạch</a>
+      <a href="#note">Ghi chú</a>
+      <a href="#terms">Điều khoản</a>
+      <a href="#sign">Gật đầu</a>
+    </div>
+  </div>
+</nav>
+
+<div class="sheet">
+
+  <header class="cover">
+    <div class="badge">Tờ trình nội bộ &middot; mức độ nghiêm túc: tương đối</div>
+    <h1>Tối Thứ 6 mình đi đâu?<br>(đã có đáp án, ký vào là xong)</h1>
+    <div class="sub">Đệ trình hai phương án nghe hơi giống công việc nhưng thật ra chỉ để được ngồi cạnh em: Plan A (cà phê) hoặc Plan B (công viên). Vài điều khoản tự chế đi kèm. Chỉ cần một cái gật đầu là triển khai.</div>
+  </header>
+  <div class="doubleline"></div>
+
+  <div class="meta">
+    <div class="cell"><div class="lb">Mã tài liệu</div><div class="vl mono">PROP-2026/T6-02</div></div>
+    <div class="cell"><div class="lb">Trạng thái</div><div class="vl" style="color:var(--gold)" id="statusVal">ĐANG CHỜ EM GẬT ĐẦU</div></div>
+    <div class="cell"><div class="lb">Người đề xuất (cũng là người trả tiền)</div><div class="vl">Việt Long</div></div>
+    <div class="cell"><div class="lb">Người có quyền phủ quyết mọi thứ</div><div class="vl">Hoàng Yến</div></div>
+    <div class="cell"><div class="lb">Thời gian hiệu lực</div><div class="vl">Tối Thứ 6, 28/08/2026, ngay khi anh thoát khỏi văn phòng</div></div>
+    <div class="cell"><div class="lb">Thời lượng</div><div class="vl">Từ lúc tan làm &rarr; đến khi hết chuyện để kể (khó lắm)</div></div>
+  </div>
+
+  <div class="parties">
+    <div class="party">
+      <div class="role">Bên đề xuất (Bên A)</div>
+      <div class="nm">Việt Long</div>
+      <div class="ttl">Trưởng ban hậu cần kiêm tài xế Grab tự nguyện, không lấy tiền ship</div>
+    </div>
+    <div class="party">
+      <div class="role">Bên phê duyệt (Bên B)</div>
+      <div class="nm">Hoàng Yến</div>
+      <div class="ttl">Cổ đông lớn nhất, nắm quyền phủ quyết toàn bộ kế hoạch tối nay</div>
+    </div>
+  </div>
+
+  <section class="blk" id="summary">
+    <h2><span class="num">1.0</span> Tóm tắt cho có vẻ chuyên nghiệp</h2>
+    <p class="lead">Thật ra chỉ là: hết giờ làm, anh muốn gặp em.</p>
+    <div class="content">
+      <p>Sau một ngày cày cuốc mệt muốn xỉu, Bên A xin phép nộp một tờ trình không hoàn toàn nghiêm túc. Mục tiêu duy nhất: chạy xe qua đón em, ăn một bữa cho no bụng, rồi tìm chỗ ngồi tám chuyện đến khi cả hai quên mất sáng mai phải dậy sớm. Không có KPI công việc nào ở đây cả, yên tâm.</p>
+    </div>
+  </section>
+
+  <section class="blk" id="objective">
+    <h2><span class="num">2.0</span> Mục tiêu (tự đặt ra, tự chấm điểm)</h2>
+    <div class="content">
+      <div class="kpi">
+        <div class="k"><div class="n mono">1</div><div class="l">bữa tối được chốt, không hỏi lại 5 lần</div></div>
+        <div class="k"><div class="n mono">1</div><div class="l">góc ngồi tám chuyện không ai làm phiền</div></div>
+        <div class="k"><div class="n mono">0</div><div class="l">lần nhắc đến deadline, sếp, công việc</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="scope">
+    <h2><span class="num">3.0</span> Hai phương án, em chọn</h2>
+    <p class="lead">Chọn nhanh cũng được, chọn chậm anh vẫn đợi.</p>
+    <div class="content">
+      <div class="plan-toggle">
+        <button id="btnA" class="active" onclick="showPlan('A')">PLAN A &middot; CÀ PHÊ</button>
+        <button id="btnB" onclick="showPlan('B')">PLAN B &middot; CÔNG VIÊN</button>
+      </div>
+
+      <div class="plan-pane active" id="paneA">
+        <table class="schedule">
+          <thead><tr><th>Mốc</th><th>Giờ</th><th>Chuyện gì xảy ra</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="t-time">Sau giờ làm</td>
+              <td class="t-est">___</td>
+              <td><span class="t-title">Chạy qua đón em</span><span class="t-desc">Cố gắng không để em đứng chờ quá 5 phút. Không hứa trước, kẹt xe là chuyện của Sài Gòn chứ không phải của anh.</span></td>
+            </tr>
+            <tr>
+              <td class="t-time">Tối</td>
+              <td class="t-est">___</td>
+              <td><span class="t-title">Ăn tối</span><span class="t-desc">Chọn 1 trong: bún bò / hủ tiếu / cơm — cấm trả lời "ăn gì cũng được". Quán: <span class="tbd">___ (điền sau)</span></span></td>
+            </tr>
+            <tr>
+              <td class="t-time">Sau ăn</td>
+              <td class="t-est">___</td>
+              <td><span class="t-title">Cà phê, tám đủ chuyện trên trời dưới đất</span><span class="t-desc">Quán: <span class="tbd">___ (điền sau)</span> &mdash; ưu tiên chỗ yên, không nhạc xập xình.</span></td>
+            </tr>
+            <tr>
+              <td class="t-time">Muộn</td>
+              <td class="t-est">___</td>
+              <td><span class="t-title">Đưa em về</span><span class="t-desc">Tạm biệt kiểu lưu luyến, tự biên tự diễn, không cần vỗ tay.</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="plan-pane" id="paneB">
+        <table class="schedule">
+          <thead><tr><th>Mốc</th><th>Giờ</th><th>Chuyện gì xảy ra</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="t-time">Sau giờ làm</td>
+              <td class="t-est">___</td>
+              <td><span class="t-title">Chạy qua đón em</span><span class="t-desc">Y chang Plan A, đoạn này miễn bàn.</span></td>
+            </tr>
+            <tr>
+              <td class="t-time">Tối</td>
+              <td class="t-est">___</td>
+              <td><span class="t-title">Ăn tối</span><span class="t-desc">Chọn 1 trong: bún bò / hủ tiếu / cơm. Quán: <span class="tbd">___ (điền sau)</span></span></td>
+            </tr>
+            <tr>
+              <td class="t-time">Sau ăn</td>
+              <td class="t-est">___</td>
+              <td><span class="t-title">Ra công viên ngồi hóng gió</span><span class="t-desc">Giả vờ ngắm cảnh nhưng thật ra chỉ ngắm em. Khu Vạn Phúc City: <span class="tbd">The Long Park / công viên nội khu / Royal Garden &mdash; chọn 1 (điền sau)</span></span></td>
+            </tr>
+            <tr>
+              <td class="t-time">Muộn</td>
+              <td class="t-est">___</td>
+              <td><span class="t-title">Đưa em về</span><span class="t-desc">Vẫn kiểu lưu luyến đó, muối bao nhiêu cũng vừa.</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="note">
+    <h2><span class="num">4.0</span> Ghi chú vận hành</h2>
+    <p class="lead">Phòng khi ông trời không hợp tác.</p>
+    <div class="content">
+      <div class="note-row">
+        <div>
+          <div style="font-weight:700;margin-bottom:4px">Trời mưa là Plan A thắng tuyệt đối, không cãi</div>
+          <div style="color:var(--muted);font-size:14px">Không cần hỏi ý kiến ai, anh tự quyết để cả hai khỏi ướt. Trời đẹp thì quyền chọn Plan A hay B hoàn toàn thuộc về em, như luật đã ghi ở Mục 3.0.</div>
+        </div>
+        <div class="badge2">&#9925;</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="terms">
+    <h2><span class="num">5.0</span> Điều khoản (tự chế, tự chịu trách nhiệm)</h2>
+    <div class="content">
+      <ol class="terms">
+        <li>Tiền nong là chuyện của <b>Bên A</b>. Bên B chỉ việc ăn ngon, cười nhiều, không cần mang ví.</li>
+        <li>Địa điểm cụ thể đang trong giai đoạn <b>"để anh tính"</b> &mdash; sẽ điền trước giờ hẹn, hứa thật.</li>
+        <li>Bên B có quyền <b>đổi ý ngay tại chỗ</b>, kể cả lúc xe đã nổ máy. Không phạt, không cự nự.</li>
+        <li>Dự án <b>không có Plan C</b>. Nếu cả hai plan đều bị từ chối thì chắc về nhà ngủ sớm cũng vui.</li>
+        <li>Nghiệm thu dự án khi <b>Bên B cười ít nhất một lần</b> trong suốt buổi tối.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="blk" id="sign" style="border-bottom:none">
+    <h2><span class="num">6.0</span> Tới màn gật đầu</h2>
+    <p class="lead">Chữ ký ở đây không có giá trị pháp lý gì cả, chỉ có giá trị làm anh vui.</p>
+    <div class="content">
+      <div class="signature">
+        <div class="sig">
+          <div class="scr">Việt Long</div>
+          <div class="line"></div>
+          <div class="nm">Việt Long</div>
+          <div class="rl">Bên đề xuất &mdash; ký sẵn từ hôm qua, chắc như bắp</div>
+        </div>
+        <div class="sig">
+          <div class="line" id="yenSigLine">
+            <svg class="sig-svg" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+              <path id="yenSigPath" class="sig-path" d="M10,42 C18,20 26,18 32,34 C36,44 40,44 44,30 C48,16 54,14 58,26 C62,38 66,40 72,26 L78,14 C82,10 86,26 92,30 C98,34 104,20 110,24 C116,28 118,40 126,36 C134,32 138,18 146,20 C154,22 156,38 164,34 C170,31 174,24 180,20"/>
+            </svg>
+          </div>
+          <div class="nm" id="yenNameText" style="visibility:hidden">Hoàng Yến</div>
+          <div class="rl" id="yenRoleText">Bên phê duyệt &mdash; đang được anh năn nỉ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="approve">
+    <button class="btn" id="approveBtn">EM GẬT ĐẦU CÁI COI</button>
+    <div class="hint" id="approveHint">Bấm phát cho anh đỡ hồi hộp.</div>
+    <div><span class="stamp" id="stamp">OK RỒI ĐÓ</span></div>
+  </div>
+
+</div>
+
+<footer>
+  Tài liệu PROP-2026/T6-02 &middot; Soạn trong lúc trốn việc &middot; Bảo mật ở mức &ldquo;hai đứa mình biết là được&rdquo;
+</footer>
+
+<script>
+  function showPlan(p){
+    document.getElementById('paneA').classList.toggle('active', p==='A');
+    document.getElementById('paneB').classList.toggle('active', p==='B');
+    document.getElementById('btnA').classList.toggle('active', p==='A');
+    document.getElementById('btnB').classList.toggle('active', p==='B');
+  }
+
+  var b=document.getElementById('approveBtn');
+  var s=document.getElementById('stamp');
+  var sigPath=document.getElementById('yenSigPath');
+  var nameText=document.getElementById('yenNameText');
+  var roleText=document.getElementById('yenRoleText');
+  var statusVal=document.getElementById('statusVal');
+  var approveHint=document.getElementById('approveHint');
+
+  b.addEventListener('click',function(){
+    if(b.disabled) return;
+    b.disabled=true;
+    document.getElementById('sign').scrollIntoView({behavior:'smooth',block:'center'});
+
+    setTimeout(function(){
+      sigPath.classList.add('draw');
+    },500);
+
+    setTimeout(function(){
+      nameText.style.visibility='visible';
+      roleText.textContent='Bên phê duyệt — đã gật đầu, chốt luôn';
+      s.classList.add('show');
+      b.textContent='Chốt kèo rồi';
+      b.style.background='#4a6b4f';
+      statusVal.textContent='ĐÃ CHỐT KÈO';
+      statusVal.style.color='#4a6b4f';
+      approveHint.textContent='Hai đứa xác nhận rồi đó. Hẹn tối Thứ 6.';
+    },2000);
+  });
+</script>
+</body>
+</html>

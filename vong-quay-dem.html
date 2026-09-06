@@ -1,0 +1,623 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vòng Quay Nửa Đêm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #10121c;
+    --bg-deep: #0a0b12;
+    --panel: #1b1e30;
+    --panel-2: #232741;
+    --line: #343a5c;
+    --text: #e9ecf6;
+    --text-dim: #9aa0c0;
+    --accent: #ffb648;
+    --accent-dim: #a97a34;
+    --accent-2: #ff6e97;
+    --accent-2-dim: #b34e6b;
+    --shadow-glow: rgba(255, 182, 72, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Times New Roman", Times, serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(28px, 8vw, 48px) clamp(16px, 5vw, 20px) clamp(48px, 10vw, 80px);
+    overflow-x: hidden;
+  }
+
+  /* ambient night glow */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 8%, rgba(255, 182, 72, 0.10), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 85% 75%, rgba(255, 110, 151, 0.08), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 10% 80%, rgba(120, 130, 220, 0.08), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stage {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .eyebrow {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before,
+  .eyebrow::after {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent-dim);
+  }
+
+  h1 {
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: clamp(38px, 7vw, 56px);
+    line-height: 1.08;
+    margin: 0 0 14px;
+    text-wrap: balance;
+    background: linear-gradient(180deg, #fff 0%, var(--accent) 120%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .sub {
+    font-size: 18.5px;
+    color: var(--text-dim);
+    max-width: 42ch;
+    margin: 0 auto 40px;
+    line-height: 1.65;
+  }
+
+  .sub strong {
+    color: var(--accent-2);
+    font-weight: 500;
+    font-style: italic;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  /* wheel */
+  .wheel-wrap {
+    position: relative;
+    width: min(88vw, 400px);
+    aspect-ratio: 1;
+    margin-bottom: 34px;
+  }
+
+  .wheel-glow {
+    position: absolute;
+    inset: -30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--shadow-glow), transparent 70%);
+    filter: blur(6px);
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
+  canvas#wheel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: block;
+    filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+    transition: transform 4.6s cubic-bezier(0.12, 0.72, 0.1, 1);
+  }
+
+  .pointer {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34px;
+    height: 40px;
+    z-index: 3;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+  }
+
+  .hub {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 17%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffe3b0, var(--accent) 55%, var(--accent-dim) 100%);
+    border: 3px solid var(--bg-deep);
+    box-shadow: 0 0 0 2px var(--accent-dim), 0 6px 16px rgba(0,0,0,0.5);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hub::after {
+    content: "";
+    width: 34%;
+    height: 34%;
+    border-radius: 50%;
+    background: var(--bg-deep);
+  }
+
+  /* spin button */
+  .spin-btn {
+    position: relative;
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.01em;
+    color: #2a1a06;
+    background: linear-gradient(180deg, #ffd27a, var(--accent) 60%, #e69b2e);
+    border: none;
+    border-radius: 999px;
+    padding: 16px 52px;
+    cursor: pointer;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.5) inset,
+      0 -3px 0 rgba(0,0,0,0.15) inset,
+      0 10px 24px rgba(255, 182, 72, 0.28);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .spin-btn:hover { transform: translateY(-2px); }
+  .spin-btn:active { transform: translateY(1px); }
+
+  .spin-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .spin-btn:focus-visible {
+    outline: 3px solid var(--accent-2);
+    outline-offset: 3px;
+  }
+
+  .hint {
+    margin-top: 14px;
+    font-size: 15px;
+    color: var(--text-dim);
+    font-family: "Space Mono", monospace;
+    letter-spacing: 0.02em;
+    min-height: 18px;
+  }
+
+  /* result ticket */
+  .ticket {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 380px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ticket.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .ticket::before {
+    content: "";
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+
+  .ticket::after {
+    content: "";
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+
+  .ticket-dot {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .ticket-text .label {
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .ticket-text .value {
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 25px;
+    color: var(--text);
+    margin-top: 2px;
+  }
+
+  /* legend */
+  .legend {
+    margin-top: 44px;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .legend-title {
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 14px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 15.5px;
+    color: var(--text-dim);
+    padding: 6px 8px;
+    border-radius: 8px;
+    line-height: 1.4;
+  }
+
+  .legend-swatch {
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  .legend-label {
+    min-width: 0;
+  }
+
+  .legend-emoji {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 420px) {
+    body {
+      padding: 24px 14px 40px;
+    }
+
+    .sub {
+      font-size: 16px;
+      max-width: 34ch;
+    }
+
+    .spin-btn {
+      font-size: 19px;
+      padding: 14px 34px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .ticket {
+      padding: 18px 20px;
+      gap: 12px;
+    }
+
+    .ticket-dot {
+      width: 40px;
+      height: 40px;
+      font-size: 19px;
+    }
+
+    .ticket-text .value {
+      font-size: 21px;
+    }
+
+    .legend-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 340px) {
+    .wheel-wrap {
+      width: 92vw;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    canvas#wheel { transition-duration: 0.2s; }
+  }
+</style>
+
+
+<style>
+  .home-link{position:fixed;top:14px;left:14px;z-index:9999;display:inline-flex;align-items:center;gap:7px;
+    padding:9px 15px;border-radius:999px;text-decoration:none;font-family:"Space Mono",monospace;
+    font-size:12px;letter-spacing:.06em;color:#ffb648;background:rgba(27,30,48,.85);
+    border:1px solid #343a5c;box-shadow:0 4px 16px rgba(0,0,0,.4);
+    backdrop-filter:blur(6px);transition:transform .2s,border-color .2s,color .2s}
+  .home-link:hover{transform:translateY(-2px);border-color:#ffb648;color:#ffd08a}
+</style>
+<a class="home-link" href="index.html">&#8592; Trang ch&#7911;</a>
+
+<div class="stage">
+  <header>
+    <div class="eyebrow">Sau 0h · Số phận xin mời</div>
+    <h1>Vòng Quay<br>Nửa Đêm</h1>
+    <p class="sub">Đêm nay tim ai cũng nôn nao, chân thì chưa biết đi về đâu. Nhắm mắt, phó mặc <strong>ông tơ bà nguyệt</strong> — quay một vòng, để số phận chỉ lối.</p>
+  </header>
+
+  <div class="wheel-wrap">
+    <div class="wheel-glow"></div>
+    <svg class="pointer" viewBox="0 0 34 40">
+      <path d="M17 40 L2 12 A17 17 0 0 1 32 12 Z" fill="#ff6e97" stroke="#0a0b12" stroke-width="2"/>
+    </svg>
+    <canvas id="wheel" width="800" height="800"></canvas>
+    <div class="hub"></div>
+  </div>
+
+  <button class="spin-btn" id="spinBtn">Ngỏ Lời Với Số Phận</button>
+  <div class="hint" id="hint">10 cửa duyên, một cái kết</div>
+
+  <div class="ticket" id="ticket">
+    <div class="ticket-dot" id="ticketDot">🎲</div>
+    <div class="ticket-text">
+      <div class="label">Định mệnh gọi tên</div>
+      <div class="value" id="ticketValue">—</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-title">Sổ tay duyên số</div>
+    <div class="legend-grid" id="legendGrid"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // 9 lựa chọn thật (chia đều tỉ lệ) + 1 "Nhà nghỉ" luôn = 0%
+  const options = [
+    { label: "Đi du lịch, sáng về",  emoji: "🧳" },
+    { label: "Cà phê tâm sự",        emoji: "☕" },
+    { label: "Về nhà ôm gối ngủ",    emoji: "🛏️" },
+    { label: "Dạo phố ngắm đèn",     emoji: "🌃" },
+    { label: "Hét karaoke giải sầu", emoji: "🎤" },
+    { label: "Rạp phim tí tách",     emoji: "🎬" },
+    { label: "Trà đá buôn chuyện",   emoji: "🍵" },
+    { label: "Rong ruổi không đích", emoji: "🏍️" },
+    { label: "Ra công viên hóng gió đêm", emoji: "🌳" },
+    { label: "Nhà Nghỉ",             emoji: "🏨", excluded: true }
+  ];
+
+  const n = options.length;
+  const sliceAngle = (2 * Math.PI) / n;
+
+  // palette xen kẽ theo tông đêm — mọi lát đều dùng chung bảng màu
+  const palette = [
+    ["#ffb648", "#e6963a"],
+    ["#ff6e97", "#e0517d"],
+    ["#7c86e0", "#5f68c4"],
+    ["#4fd3c4", "#33b3a5"],
+    ["#ffd27a", "#e3ac52"],
+    ["#c78bff", "#a468e0"],
+    ["#5ecbff", "#3aa9de"],
+    ["#ff9257", "#e0733c"],
+    ["#8de07c", "#67c256"],
+    ["#f2789a", "#d45877"]
+  ];
+
+  function sliceFill(i) {
+    return palette[i % palette.length];
+  }
+
+  const canvas = document.getElementById("wheel");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2, r = W / 2 - 6;
+
+  function drawWheel() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < n; i++) {
+      const start = i * sliceAngle - Math.PI / 2;
+      const end = start + sliceAngle;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, end);
+      ctx.closePath();
+
+      const [c1, c2] = sliceFill(i);
+      const grad = ctx.createRadialGradient(cx, cy, r * 0.15, cx, cy, r);
+      grad.addColorStop(0, c1);
+      grad.addColorStop(1, c2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#10121c";
+      ctx.stroke();
+
+      // label
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(start + sliceAngle / 2);
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#160f04";
+
+      // emoji sits alone, near the rim
+      ctx.font = "34px 'Times New Roman', serif";
+      ctx.fillText(options[i].emoji, r - 26, -32);
+
+      // label wraps to fit, shrinking the font if it still needs 3+ lines
+      const maxWidth = r * 0.6;
+      const maxLines = 3;
+      function wrapAt(fontSize) {
+        ctx.font = `italic 700 ${fontSize}px 'Times New Roman', serif`;
+        const words = options[i].label.split(" ");
+        const result = [];
+        let line = "";
+        for (const word of words) {
+          const test = line ? line + " " + word : word;
+          if (ctx.measureText(test).width > maxWidth && line) {
+            result.push(line);
+            line = word;
+          } else {
+            line = test;
+          }
+        }
+        if (line) result.push(line);
+        return result;
+      }
+
+      let fontSize = 26;
+      let lines = wrapAt(fontSize);
+      while (lines.length > maxLines && fontSize > 16) {
+        fontSize -= 2;
+        lines = wrapAt(fontSize);
+      }
+
+      const lineHeight = fontSize + 5;
+      const startY = 18 - ((lines.length - 1) * lineHeight) / 2;
+      lines.forEach((ln, idx) => {
+        ctx.fillText(ln, r - 26, startY + idx * lineHeight);
+      });
+      ctx.restore();
+    }
+
+    // rim
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = "#1b1e30";
+    ctx.stroke();
+  }
+
+  drawWheel();
+
+  // build legend
+  const legendGrid = document.getElementById("legendGrid");
+  options.forEach((opt, i) => {
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    item.innerHTML = `<span class="legend-swatch" style="background:${sliceFill(i)[0]}"></span><span class="legend-label"><span class="legend-emoji">${opt.emoji}</span> ${opt.label}</span>`;
+    legendGrid.appendChild(item);
+  });
+
+  // spin logic — "excluded" options are shown on the wheel like any other,
+  // but pickIndex() never returns their index
+  const spinBtn = document.getElementById("spinBtn");
+  const hint = document.getElementById("hint");
+  const ticket = document.getElementById("ticket");
+  const ticketDot = document.getElementById("ticketDot");
+  const ticketValue = document.getElementById("ticketValue");
+
+  let currentRotation = 0;
+  let spinning = false;
+
+  function pickIndex() {
+    const eligible = options
+      .map((o, i) => i)
+      .filter((i) => !options[i].excluded);
+    return eligible[Math.floor(Math.random() * eligible.length)];
+  }
+
+  spinBtn.addEventListener("click", () => {
+    if (spinning) return;
+    spinning = true;
+    spinBtn.disabled = true;
+    ticket.classList.remove("show");
+    hint.textContent = "Số phận đang đắn đo…";
+
+    const targetIndex = pickIndex();
+    const sliceCenterDeg = (targetIndex * sliceAngle + sliceAngle / 2) * (180 / Math.PI);
+    // pointer is at top (0deg / -90deg offset already baked into draw)
+    const jitter = (Math.random() - 0.5) * (sliceAngle * 0.5 * (180 / Math.PI));
+    const extraSpins = 6 + Math.floor(Math.random() * 3); // 6-8 full turns
+    const finalDeg = extraSpins * 360 - sliceCenterDeg - jitter;
+
+    currentRotation += 360 - ((currentRotation) % 360) + finalDeg;
+    canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+    window.setTimeout(() => {
+      spinning = false;
+      spinBtn.disabled = false;
+      const result = options[targetIndex];
+      const [fc1, fc2] = sliceFill(targetIndex);
+      ticketDot.textContent = result.emoji;
+      ticketDot.style.background = `linear-gradient(180deg, ${fc1}, ${fc2})`;
+      ticketValue.textContent = result.label;
+      ticket.classList.add("show");
+      hint.textContent = "10 cửa duyên, một cái kết";
+    }, 4700);
+  });
+})();
+</script>

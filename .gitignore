@@ -1,0 +1,9 @@
+# Claude Code / BA-Kit tooling — not part of the public site
+.claude/
+_scripts/
+_templates/
+docs/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db

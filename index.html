@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Anh &amp; Em — Hành Trình</title>
+<meta name="description" content="Hành trình của anh và em, bắt đầu từ 16.08.2026">
+<meta property="og:title" content="Anh &amp; Em">
+<meta property="og:description" content="Một chuyện tình vẫn đang được viết tiếp.">
+<meta name="theme-color" content="#0d0f18">
+<meta name="google" content="notranslate">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f18;
+    --panel: #171a29;
+    --panel-2: #1f2338;
+    --line: #2e3350;
+    --text: #eceef8;
+    --text-dim: #9aa0c0;
+    --gold: #ffb648;
+    --gold-dim: #a97a34;
+    --rose: #ff6e97;
+    --rose-dim: #b34e6b;
+    --glow: rgba(255,182,72,.3);
+    --curtain: #2a0c16;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', 'Times New Roman', Times, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body.locked { overflow: hidden; height: 100vh; }
+
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255,182,72,.10), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 85% 70%, rgba(255,110,151,.09), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 10% 85%, rgba(120,130,220,.08), transparent 60%);
+  }
+
+  /* ---------------- STARFIELD ---------------- */
+  #sky { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:.15;transform:scale(.8)} 50%{opacity:.9;transform:scale(1.15)} }
+  .fheart { position: absolute; bottom: -40px; font-size: 18px; opacity: .5; animation: floatUp linear infinite; }
+  @keyframes floatUp {
+    0%{transform:translateY(0) rotate(0);opacity:0} 12%{opacity:.55}
+    100%{transform:translateY(-115vh) rotate(340deg);opacity:0}
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 940px; margin: 0 auto; padding: 0 clamp(18px,5vw,28px); }
+
+  /* ================================================================
+     1. GATE — bộ câu hỏi khoá
+     ================================================================ */
+  #gate {
+    position: fixed; inset: 0; z-index: 900;
+    background: radial-gradient(ellipse at 50% 30%, #191d2e, #0a0b12 70%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px 18px; overflow-y: auto;
+  }
+  #gate.done { opacity: 0; pointer-events: none; transition: opacity .7s ease; }
+
+  .gate-card {
+    width: 100%; max-width: 520px; text-align: center;
+    animation: gateIn .6s cubic-bezier(.2,.7,.3,1) both;
+  }
+  @keyframes gateIn { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
+
+  .gate-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 18px;
+  }
+  .gate-card h1 { font-size: clamp(28px,7vw,40px); font-weight: 600; line-height: 1.2; margin-bottom: 10px; }
+  .gate-card .sub { color: var(--text-dim); font-style: italic; margin-bottom: 26px; font-size: 17px; }
+
+  .gate-progress { display: flex; gap: 7px; justify-content: center; margin-bottom: 22px; }
+  .gp {
+    width: 26px; height: 3px; border-radius: 2px; background: var(--line);
+    transition: background .35s, box-shadow .35s;
+  }
+  .gp.ok  { background: #4ade80; box-shadow: 0 0 10px rgba(74,222,128,.55); }
+  .gp.bad { background: #f2555a; box-shadow: 0 0 10px rgba(242,85,90,.55); }
+
+  .q-num {
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .16em;
+    color: var(--rose); margin-bottom: 10px;
+  }
+  .q-text { font-size: clamp(21px,5vw,27px); font-weight: 600; margin-bottom: 24px; line-height: 1.35; }
+
+  .opts { display: grid; gap: 10px; }
+  .opt {
+    font-family: inherit; font-size: 17px; color: var(--text);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 15px 18px; cursor: pointer; text-align: left;
+    transition: transform .18s, border-color .2s, background .2s;
+    min-height: 52px;
+  }
+  .opt:hover { border-color: var(--gold-dim); background: var(--panel-2); }
+  .opt:active { transform: scale(.98); }
+  .opt.wrong {
+    animation: shake .45s; border-color: #f2555a;
+    background: rgba(242,85,90,.14); color: #ff9ea1;
+  }
+  .opt.right {
+    border-color: #4ade80; background: rgba(74,222,128,.14); color: #b9f6cd;
+  }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+    40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+  }
+
+  .gate-msg { margin-top: 18px; min-height: 26px; color: var(--rose); font-style: italic; font-size: 16px; }
+
+  .gate-final { display: none; }
+  .gate-final.show { display: block; animation: gateIn .5s both; }
+
+  /* ---- màn mất lượt ---- */
+  .gate-lost { display: none; }
+  .gate-lost.show { display: block; animation: lostIn .6s ease both; }
+  @keyframes lostIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:none} }
+  .gate-lost .lost-ico {
+    width: 66px; height: 66px; margin: 0 auto 20px; border-radius: 50%;
+    border: 1px solid var(--rose-dim); color: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-family: 'Space Mono', monospace;
+    box-shadow: 0 0 30px rgba(255,110,151,.18);
+  }
+  .gate-lost h1 { color: var(--rose); }
+  .gate-lost .lost-note {
+    margin-top: 22px; font-family: 'Space Mono', monospace; font-size: 11px;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--text-dim); opacity: .6;
+  }
+  #gate.lost-bg { background: radial-gradient(ellipse at 50% 30%, #241320, #08070a 70%); transition: background 1s ease; }
+  .btn-enter {
+    font-family: 'Space Mono', monospace; font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
+    color: #241703; background: linear-gradient(135deg, var(--gold), #ffd08a);
+    border: 0; border-radius: 999px; padding: 17px 38px; cursor: pointer; margin-top: 8px;
+    box-shadow: 0 8px 30px rgba(255,182,72,.35); transition: transform .2s;
+  }
+  .btn-enter:hover { transform: translateY(-2px); }
+  .btn-enter:active { transform: scale(.97); }
+
+  /* ================================================================
+     2. CURTAIN — hiệu ứng mở sân khấu
+     ================================================================ */
+  #stagefx { position: fixed; inset: 0; z-index: 880; pointer-events: none; display: none; }
+  #stagefx.run { display: block; }
+  .curtain {
+    position: absolute; top: 0; bottom: 0; width: 51%;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,.28) 0 14px, rgba(255,255,255,.05) 14px 30px),
+      linear-gradient(180deg, #3d1220, var(--curtain) 55%, #1a0710);
+    box-shadow: 0 0 60px rgba(0,0,0,.7);
+  }
+  .curtain.l { left: 0; transform-origin: left center; animation: openL 1.9s cubic-bezier(.7,0,.25,1) forwards; }
+  .curtain.r { right: 0; transform-origin: right center; animation: openR 1.9s cubic-bezier(.7,0,.25,1) forwards; }
+  @keyframes openL { 0%{transform:translateX(0)} 100%{transform:translateX(-102%)} }
+  @keyframes openR { 0%{transform:translateX(0)} 100%{transform:translateX(102%)} }
+
+  .spotlight {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 45% 55% at 50% 42%, rgba(255,214,150,.5), transparent 62%);
+    opacity: 0; animation: spot 2.4s ease-out forwards;
+  }
+  @keyframes spot { 0%{opacity:0} 22%{opacity:1} 100%{opacity:0} }
+
+  .act-title {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 20px;
+    opacity: 0; animation: actIn 2.6s ease forwards;
+  }
+  .act-title .k {
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .3em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 12px;
+  }
+  .act-title .t { font-size: clamp(30px,8vw,54px); font-weight: 600; color: #fff; text-shadow: 0 0 40px rgba(255,182,72,.6); }
+  @keyframes actIn { 0%{opacity:0;transform:scale(.94)} 25%{opacity:1;transform:none} 72%{opacity:1} 100%{opacity:0} }
+
+  /* ================================================================
+     3. NAV
+     ================================================================ */
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(13,15,24,.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 13px; padding-bottom: 13px; }
+  .brand { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+  nav .links { display: flex; gap: 20px; font-size: 16px; }
+  nav .links a { color: var(--text-dim); text-decoration: none; transition: color .2s; }
+  nav .links a:hover { color: var(--gold); }
+  @media (max-width: 680px) { nav .links { display: none; } }
+
+  /* ---- music toggle ---- */
+  #musicBtn {
+    position: fixed; right: 14px; bottom: 14px; z-index: 200;
+    width: 48px; height: 48px; border-radius: 50%; cursor: pointer;
+    background: rgba(23,26,41,.9); border: 1px solid var(--line); color: var(--gold);
+    font-size: 19px; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(6px); box-shadow: 0 4px 18px rgba(0,0,0,.45); transition: transform .2s, border-color .2s;
+  }
+  #musicBtn.show { display: flex; }
+  #musicBtn:hover { transform: scale(1.08); border-color: var(--gold); }
+  #musicBtn.off { color: var(--text-dim); }
+
+  /* ================================================================
+     4. HERO
+     ================================================================ */
+  header.hero { text-align: center; padding: clamp(44px,10vw,88px) 0 clamp(36px,7vw,58px); }
+  .eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--gold);
+    display: inline-flex; align-items: center; gap: 10px; margin-bottom: 20px;
+  }
+  .eyebrow::before, .eyebrow::after { content: ""; width: 32px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim)); }
+  .eyebrow::after { background: linear-gradient(90deg, var(--gold-dim), transparent); }
+
+  .hero-photo {
+    width: clamp(130px,34vw,178px); height: clamp(130px,34vw,178px);
+    margin: 0 auto 26px; border-radius: 50%; overflow: hidden;
+    border: 2px solid var(--gold-dim); box-shadow: 0 0 44px rgba(255,182,72,.24);
+  }
+  .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .hero h1 { font-size: clamp(42px,11vw,82px); font-weight: 600; line-height: 1.06; }
+  .hero h1 .amp { display: block; font-size: .48em; color: var(--rose); font-style: italic; margin: 2px 0; text-shadow: 0 0 26px rgba(255,110,151,.45); }
+  .hero .tagline { font-size: clamp(17px,3.4vw,22px); color: var(--text-dim); font-style: italic; max-width: 500px; margin: 20px auto 0; }
+  .heartbeat { display: inline-block; animation: beat 1.6s ease-in-out infinite; color: var(--rose); }
+  @keyframes beat { 0%,100%{transform:scale(1)} 15%{transform:scale(1.22)} 30%{transform:scale(1)} 45%{transform:scale(1.14)} }
+
+  /* ---- random note ---- */
+  .note {
+    margin: 26px auto 0; max-width: 460px; min-height: 54px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--rose-dim);
+    border-radius: 12px; padding: 14px 18px; font-style: italic; color: var(--text-dim); font-size: 17px;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .note:hover { border-color: var(--gold-dim); }
+  #noteText { transition: opacity .35s; }
+  .note .refresh { font-family: 'Space Mono', monospace; font-size: 15px; color: var(--gold); flex-shrink: 0; }
+
+  /* ---- counter ---- */
+  .counter { margin-top: 30px; display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
+  .cbox { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 15px; min-width: 78px; }
+  .cbox b { display: block; font-family: 'Space Mono', monospace; font-size: 24px; color: var(--gold); font-weight: 700; line-height: 1.2; }
+  .cbox span { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); }
+  .counter-cap { margin-top: 12px; font-size: 15px; color: var(--text-dim); font-style: italic; }
+
+  /* ================================================================
+     5. SECTIONS
+     ================================================================ */
+  section { padding: clamp(44px,8vw,78px) 0; }
+  .sec-head { text-align: center; margin-bottom: clamp(30px,6vw,48px); }
+  .sec-head h2 { font-size: clamp(28px,6vw,42px); font-weight: 600; margin-bottom: 6px; }
+  .sec-head p { color: var(--text-dim); font-style: italic; }
+  .rule { height: 1px; background: linear-gradient(90deg, transparent, var(--line), transparent); }
+
+  /* ---- timeline ---- */
+  .timeline { position: relative; max-width: 700px; margin: 0 auto; padding-left: 32px; }
+  .timeline::before { content: ""; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(180deg, var(--gold-dim), var(--rose-dim), transparent); }
+  .tl-item { position: relative; padding-bottom: 32px; opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .tl-item.show { opacity: 1; transform: none; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before {
+    content: ""; position: absolute; left: -30px; top: 9px; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--gold); box-shadow: 0 0 0 4px rgba(255,182,72,.14), 0 0 16px var(--glow);
+  }
+  .tl-item .when { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--rose); margin-bottom: 3px; }
+  .tl-item h3 { font-size: 23px; font-weight: 600; margin-bottom: 4px; }
+  .tl-item p { color: var(--text-dim); }
+  .tl-photo { margin-top: 12px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); max-width: 420px; }
+  .tl-photo img { width: 100%; display: block; }
+
+  /* ---- future / secret ---- */
+  /* mốc tương lai: nhìn y hệt các mốc khác, không lộ gợi ý gì */
+  .tl-future { cursor: default; }
+  .tl-future .hint {
+    font-family: 'Space Mono', monospace; font-size: 11px; color: var(--gold);
+    margin-top: 8px; letter-spacing: .06em; opacity: 0; transition: opacity .4s;
+    min-height: 16px;
+  }
+  .tl-future .hint.show { opacity: .85; }
+  /* rung nhẹ khi sắp mở ra */
+  .tl-future.warm h3 { color: var(--gold); transition: color .3s; }
+
+  .wishlist { max-height: 0; overflow: hidden; transition: max-height .7s cubic-bezier(.4,0,.2,1); }
+  .wishlist.open { max-height: 780px; }
+  .wishlist ul { list-style: none; margin-top: 16px; display: grid; gap: 9px; }
+  .wishlist li {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 15px; font-size: 17px; display: flex; align-items: center; gap: 11px;
+    opacity: 0; transform: translateX(-14px); animation: wishIn .45s ease forwards;
+  }
+  @keyframes wishIn { to { opacity: 1; transform: none; } }
+  .wishlist li::before { content: "○"; color: var(--gold); font-size: 14px; flex-shrink: 0; }
+  .wishlist li.hi {
+    border-color: var(--rose); background: linear-gradient(135deg, rgba(255,110,151,.16), rgba(255,182,72,.07));
+    box-shadow: 0 0 24px rgba(255,110,151,.2); font-weight: 700; color: #fff;
+  }
+  .wishlist li.hi::before { content: "★"; color: var(--rose); }
+
+  /* Chặn tiện ích dịch/tra từ chèn thẻ làm vỡ chữ tiếng Việt.
+     Một số extension bọc <font> quanh từng từ kèm nền vàng — reset hết. */
+  .wishlist li font,
+  .wishlist li span:not([class]),
+  .tl-item font,
+  .letter font,
+  .card font,
+  .note font,
+  .opt font,
+  .q-text font {
+    all: unset !important;
+    background: none !important;
+    color: inherit !important;
+    font: inherit !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+  /* ---- cards ---- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px,1fr)); gap: 18px; }
+  .card {
+    display: flex; flex-direction: column; position: relative; overflow: hidden;
+    background: linear-gradient(160deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--line); border-radius: 16px; padding: 24px 22px 22px;
+    text-decoration: none; color: inherit;
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .card::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .35s;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,182,72,.13), transparent 70%);
+  }
+  .card:hover { transform: translateY(-6px); border-color: var(--gold-dim); box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+  .card:hover::after { opacity: 1; }
+  .card .ico { font-size: 32px; margin-bottom: 10px; }
+  .card .tag { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--rose); margin-bottom: 7px; }
+  .card h3 { font-size: 24px; font-weight: 600; margin-bottom: 7px; }
+  .card p { color: var(--text-dim); font-size: 17px; flex: 1; }
+  .card .go { margin-top: 15px; font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .1em; color: var(--gold); }
+
+  /* ---- album ---- */
+  .album { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
+  .ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); }
+  .ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
+  .ph:hover img { transform: scale(1.06); }
+  .album-empty { text-align: center; color: var(--text-dim); font-style: italic; }
+
+  /* ---- letter ---- */
+  .letter {
+    max-width: 620px; margin: 0 auto; background: var(--panel);
+    border: 1px solid var(--line); border-left: 3px solid var(--rose-dim);
+    border-radius: 12px; padding: clamp(24px,5vw,38px);
+    font-style: italic; color: var(--text-dim); text-align: center;
+  }
+  .letter p + p { margin-top: 13px; }
+  .letter .big { font-size: clamp(20px,4.6vw,26px); color: var(--text); font-weight: 600; font-style: normal; line-height: 1.4; }
+  .letter .sign { margin-top: 20px; font-style: normal; font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+
+  footer { text-align: center; padding: 40px 0 52px; color: var(--text-dim); font-size: 15px; border-top: 1px solid var(--line); margin-top: 36px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body class="locked">
+
+<!-- ================= GATE ================= -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-eyebrow">Cửa vào · chỉ dành cho một người</div>
+
+    <div id="gateQuiz">
+      <h1>Trước khi vào…</h1>
+      <p class="sub">Trả lời vài câu để anh biết chắc là em.</p>
+      <div class="gate-progress" id="gateProgress"></div>
+      <div class="q-num" id="qNum"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="opts" id="qOpts"></div>
+      <div class="gate-msg" id="gateMsg"></div>
+    </div>
+
+    <div class="gate-final" id="gateFinal">
+      <h1>Đúng hết rồi.</h1>
+      <p class="sub">Đúng là em thật. Vào đi.</p>
+      <button class="btn-enter" id="btnEnter">Mở màn ♥</button>
+    </div>
+
+    <div class="gate-lost" id="gateLost">
+      <div class="lost-ico">✕</div>
+      <h1>Bạn đã mất lượt</h1>
+      <p class="sub">Có vẻ bạn không phải người mà trang này đang chờ.</p>
+      <p class="lost-note">Cửa đã đóng.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CURTAIN ================= -->
+<div id="stagefx">
+  <div class="spotlight"></div>
+  <div class="act-title">
+    <div class="k">Chương mới</div>
+    <div class="t">Anh &amp; Em</div>
+  </div>
+  <div class="curtain l"></div>
+  <div class="curtain r"></div>
+</div>
+
+<div id="sky"></div>
+
+<audio id="bgm" loop preload="auto" src="music/the-gioi-cua-anh.mp3"></audio>
+<button id="musicBtn" title="Bật/tắt nhạc">♪</button>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">A &amp; E · 16.08.2026</div>
+    <div class="links">
+      <a href="#hanh-trinh">Hành trình</a>
+      <a href="#album">Ảnh</a>
+      <a href="#kham-pha">Khám phá</a>
+      <a href="#loi-nhan">Lời nhắn</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Hành trình của mình</div>
+
+    <div class="hero-photo" data-photo><img src="images/hero.jpg" alt=""></div>
+
+    <h1>Anh<span class="amp">&amp;</span>Em</h1>
+
+    <p class="tagline">Bắt đầu từ một cú quẹt phải, và vẫn chưa có ý định dừng <span class="heartbeat">❤</span></p>
+
+    <div class="note" id="noteBox" title="Bấm để đổi câu khác">
+      <span id="noteText"></span>
+      <span class="refresh">↻</span>
+    </div>
+
+    <div class="counter">
+      <div class="cbox"><b id="d">—</b><span>Ngày</span></div>
+      <div class="cbox"><b id="h">—</b><span>Giờ</span></div>
+      <div class="cbox"><b id="m">—</b><span>Phút</span></div>
+      <div class="cbox"><b id="s">—</b><span>Giây</span></div>
+    </div>
+    <p class="counter-cap">kể từ 16.08.2026 — ngày đầu tiên trên Bumble</p>
+  </header>
+
+  <div class="rule"></div>
+
+  <!-- ================= TIMELINE ================= -->
+  <section id="hanh-trinh">
+    <div class="sec-head">
+      <h2>Chặng đường</h2>
+      <p>Mới có mấy ngày, mà kể đã thấy dài</p>
+    </div>
+
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="when">16 · 08 · 2026</div>
+        <h3>Bắt đầu từ Bumble</h3>
+        <p>Quẹt phải rồi phát hiện ra quá trời điểm chung — từ những ngày Đoàn – Hội cho tới hàng loạt chuyện trùng hợp đến khó tin. Nói chuyện một lúc là biết người này không giống mấy cuộc trò chuyện khác.</p>
+        <div class="tl-photo" data-photo><img src="images/tl1.jpg" alt=""></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="when">18 · 08 · 2026</div>
+        <h3>Gửi Proposal</h3>
+        <p>Không hoa, không thư tay — anh gửi hẳn một bản đề xuất có mã tài liệu, có Plan A, Plan B và ô ký duyệt. Cách tỏ ý kỳ lạ, nhưng là cách rất anh.</p>
+        <div class="tl-photo" data-photo><img src="images/tl2.jpg" alt=""></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="when">21 · 08 · 2026</div>
+        <h3>Bún bò, cà phê Trạm Do, và 1 giờ sáng</h3>
+        <p>Đi ăn bún bò rồi qua Trạm Do ngồi làm việc. Làm được bao nhiêu không nhớ, chỉ nhớ deep talk tới 1 giờ sáng mà vẫn còn chuyện để nói. Hoá ra hợp nhau thật.</p>
+        <div class="tl-photo" data-photo><img src="images/tl3.jpg" alt=""></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="when">22 · 08 · 2026</div>
+        <h3>Đi nhậu, và đi bão ké</h3>
+        <p>Qua rước em, đi nhậu, rồi chở em về. Tối đó Việt Nam thắng, cả thành phố đổ ra đường — mình đi bão ké một đoạn. Ồn ào, đông đúc, mà vui thiệt.</p>
+        <div class="tl-photo" data-photo><img src="images/tl4.jpg" alt=""></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="when">23 · 08 · 2026</div>
+        <h3>First date</h3>
+        <p>Cà phê làm việc, xem phim, rồi ăn trong Gigamall. Gọi là buổi hẹn đầu tiên cho trang trọng, chứ thật ra mình đã thân từ mấy hôm trước rồi.</p>
+        <div class="tl-photo" data-photo><img src="images/tl5.jpg" alt=""></div>
+      </div>
+
+      <div class="tl-item tl-future" id="futureItem">
+        <div class="when">Đang viết tiếp…</div>
+        <h3>Và những chương phía trước</h3>
+        <p>Còn rất nhiều trang trắng. Mình cứ đi từ từ, viết tiếp từng chương một.</p>
+        <div class="hint" id="futureHint"></div>
+
+        <div class="wishlist" id="wishlist">
+          <ul>
+            <li>Đi du lịch cùng em</li>
+            <li>Chở em đi làm</li>
+            <li>Một ngày nấu ăn cùng nhau</li>
+            <li>Dẫn em về ra mắt ba mẹ anh</li>
+            <li>Em dẫn anh về quê</li>
+            <li class="hi">Công khai</li>
+            <li>Đưa anh đi gặp bạn bè của em</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- ================= ALBUM ================= -->
+  <section id="album">
+    <div class="sec-head">
+      <h2>Ảnh</h2>
+      <p>Vài khoảnh khắc giữ lại được</p>
+    </div>
+    <div class="album" id="albumGrid">
+      <div class="ph" data-photo><img src="images/album1.jpg" alt=""></div>
+      <div class="ph" data-photo><img src="images/album2.jpg" alt=""></div>
+      <div class="ph" data-photo><img src="images/album3.jpg" alt=""></div>
+      <div class="ph" data-photo><img src="images/album4.jpg" alt=""></div>
+      <div class="ph" data-photo><img src="images/album5.jpg" alt=""></div>
+      <div class="ph" data-photo><img src="images/album6.jpg" alt=""></div>
+      <div class="ph" data-photo><img src="images/album7.jpg" alt=""></div>
+      <div class="ph" data-photo><img src="images/album8.jpg" alt=""></div>
+    </div>
+    <p class="album-empty" id="albumEmpty" style="display:none">Ảnh sẽ được thêm vào sau…</p>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- ================= SUB PAGES ================= -->
+  <section id="kham-pha">
+    <div class="sec-head">
+      <h2>Khám phá</h2>
+      <p>Ba góc nhỏ khác — bấm vào để mở</p>
+    </div>
+
+    <div class="cards">
+      <a class="card" href="ke-hoach-chu-nhat.html">
+        <div class="ico">📄</div>
+        <div class="tag">Văn bản · PROP-2026/CN-01</div>
+        <h3>Kế hoạch một ngày Chủ nhật</h3>
+        <p>Bản đề xuất chính thức về một ngày trọn vẹn — có Plan A, Plan B, điều khoản và ô ký duyệt. Vẫn đang chờ Bên B phê duyệt.</p>
+        <div class="go">Mở tài liệu →</div>
+      </a>
+
+      <a class="card" href="ke-hoach-thu-sau.html">
+        <div class="ico">📄</div>
+        <div class="tag">Văn bản · PROP-2026/T6-02</div>
+        <h3>Kế hoạch buổi tối Thứ 6</h3>
+        <p>Ăn tối rồi cà phê, hoặc ăn tối rồi ra công viên ngồi nói chuyện — Plan A / Plan B, Bên B chọn tại chỗ.</p>
+        <div class="go">Mở tài liệu →</div>
+      </a>
+
+      <a class="card" href="ke-hoach-thu-bay.html">
+        <div class="ico">📄</div>
+        <div class="tag">Văn bản · PROP-2026/T7-02</div>
+        <h3>Kế hoạch ngày Thứ 7</h3>
+        <p>Trọn ngày từ bến xe đến bến xe — chỉ khác nhau ở quán cà phê: Ngõ Quán hay Coffee In Bed.</p>
+        <div class="go">Mở tài liệu →</div>
+      </a>
+
+      <a class="card" href="game-duoi-bat.html">
+        <div class="ico">💘</div>
+        <div class="tag">Trò chơi · 5 giây</div>
+        <h3>Thử Thách Trái Tim</h3>
+        <p>Bắt lấy trái tim đang chạy trốn trong 5 giây. Nghe dễ thôi… nhưng nút này nhõng nhẽo lắm, cứ tới gần là né.</p>
+        <div class="go">Chơi thử →</div>
+      </a>
+
+      <a class="card" href="vong-quay-dem.html">
+        <div class="ico">🎡</div>
+        <div class="tag">Số phận · sau 0h</div>
+        <h3>Vòng Quay Nửa Đêm</h3>
+        <p>Mười cửa duyên, một cái kết. Khi cả hai không biết tối nay đi đâu, cứ để ông tơ bà nguyệt quyết định giúp.</p>
+        <div class="go">Quay ngay →</div>
+      </a>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- ================= LETTER ================= -->
+  <section id="loi-nhan">
+    <div class="sec-head">
+      <h2>Lời nhắn</h2>
+      <p>Gửi Hoàng Yến</p>
+    </div>
+
+    <div class="letter">
+      <p class="big">Anh không thích ngọt ngào.<br>Nhưng anh thích em.</p>
+      <p>Anh không giỏi mấy chuyện hoa mỹ, nên anh làm trang này thay cho những câu chưa nói được.</p>
+      <p>Mới có mấy ngày thôi, mà anh thấy đủ để biết là mình muốn đi tiếp. Đi từ từ cũng được, miễn là còn đi cùng nhau.</p>
+      <div class="sign">— Việt Long <span class="heartbeat">❤</span></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">Made with <span class="heartbeat">❤</span> by Long · dành riêng cho Yến</div>
+</footer>
+
+<script>
+/* ==================================================================
+   ⚙️  KHU VỰC CHỈNH NỘI DUNG — sửa hết ở đây, không cần đụng chỗ khác
+   ================================================================== */
+
+/* --- Ngày bắt đầu (năm, tháng-1, ngày) --- */
+var START_DATE = new Date(2026, 7, 16, 0, 0, 0);   // 16/08/2026
+
+/* --- Kho câu hỏi khoá. Mỗi lần vào random 5 câu.
+       a: mảng lựa chọn, c: vị trí đáp án đúng (đếm từ 0) --- */
+var QUESTIONS = [
+  { q: "Mình quen nhau qua đâu?",
+    a: ["Bumble", "Bạn bè", "Đụng xe xong yêu luôn", "Kết bạn Facebook xong nhắn tin"], c: 0 },
+
+  { q: "Ngày 21/8 mình ăn gì trước khi đi cafe?",
+    a: ["Bún bò", "Bún chả", "Phở", "Lẩu"], c: 0 },
+
+  { q: "Quán cafe deep talk tới 1h sáng tên gì?",
+    a: ["Trạm Do", "The Coffee House", "Highlands", "Katinat"], c: 0 },
+
+  { q: "Ngày 23/8 mình coi phim gì?",
+    a: ["Nghỉ hè gặp nghỉ hưu", "Một đêm duy nhất", "Quý tử vượt giàu", "Ma tù"], c: 0 },
+
+  { q: "Hôm first date anh mặc áo màu gì?",
+    a: ["Xanh dương", "Xanh lá", "Đỏ", "Sọc"], c: 0 },
+
+  { q: "Tối 22/8 mình đi bão vì đội nào thắng?",
+    a: ["Việt Nam", "Thái Lan", "Indonesia", "Malaysia"], c: 0 },
+
+  { q: "First date mình đi chơi ở trung tâm thương mại nào?",
+    a: ["Gigamall", "Vincom", "Aeon Mall", "Crescent Mall"], c: 0 },
+
+  { q: "Hồi sinh viên mình có điểm chung là cùng tham gia gì?",
+    a: ["Đoàn – Hội", "CLB tiếng Anh", "Đội bóng", "Ban nhạc"], c: 0 },
+
+  { q: "Ngày 18/8 anh gửi em cái gì?",
+    a: ["Một bản Proposal", "Một bó hoa", "Một lá thư tay", "Một bài hát"], c: 0 }
+];
+var SO_CAU_HOI  = 3;    // tối đa 3 câu
+var SO_CAU_DUNG = 2;    // đúng đủ 2 câu là vào được luôn, khỏi hỏi tiếp
+var SO_LAN_SAI  = 2;    // sai đủ 2 lần là mất lượt
+
+/* --- Câu trêu khi trả lời sai (random) --- */
+var WRONG_MSGS = [
+  "Sai rồi. Nhớ lại đi nào.",
+  "Hmm… chắc chưa? Thử lại.",
+  "Không phải cái đó đâu.",
+  "Gần rồi mà chưa đúng.",
+  "Em quên thiệt hả? Thử lại lần nữa."
+];
+
+/* --- Thư viện lời nhắn ngẫu nhiên (bấm vào để đổi câu) --- */
+var NOTES = [
+  // — cộc lốc mà thương —
+  "Anh không giỏi nói chuyện tình cảm. Nhưng với em thì anh cố.",
+  "Anh không thích ngọt ngào. Nhưng anh thích em.",
+  "Không hứa gì to tát. Chỉ hứa là còn ở đây.",
+  "Nhớ em. Nói vậy thôi chứ không có gì.",
+  "Không cần cố gắng gì hết. Cứ là em thôi.",
+  "Anh dở khoản nói. Nên anh làm.",
+  "Ai hỏi thì anh nói là bạn. Nhưng anh biết không phải.",
+  "Anh ít nói. Nhưng chuyện gì của em anh cũng nhớ.",
+
+  // — quan tâm kiểu cằn nhằn —
+  "Đi ngủ sớm giùm cái.",
+  "Hôm nay ăn gì chưa? Hỏi thiệt đó.",
+  "Uống nước đi. Cả ngày ngồi đó rồi.",
+  "Về tới nhà nhắn anh một tiếng.",
+  "Đừng bỏ bữa nữa. Anh biết đó.",
+  "Lạnh thì mặc thêm áo. Đừng có lì.",
+  "Mệt thì nghỉ. Deadline không chạy đi đâu mất.",
+  "Bớt thức khuya lại. Anh nói bao nhiêu lần rồi.",
+
+  // — mấy ngày vừa rồi —
+  "Mấy ngày thôi mà thấy quen như lâu lắm rồi.",
+  "1 giờ sáng mà vẫn còn chuyện để nói. Lạ thiệt.",
+  "Bún bò hôm đó ngon. Nhưng không phải vì bún bò.",
+  "Đi bão vui, mà chở em về còn vui hơn.",
+  "Cà phê Trạm Do — anh chẳng làm được gì cả buổi.",
+  "Coi phim mà anh nhớ mỗi chuyện ngồi kế em.",
+  "Cái proposal đó anh làm nghiêm túc lắm đó nha.",
+  "Quẹt phải một cái, tự nhiên thành ra thế này.",
+
+  // — bâng quơ —
+  "Bận cỡ nào cũng rep tin nhắn em.",
+  "Đang làm gì đó? Không, hỏi vậy thôi.",
+  "Rảnh không? Anh qua chở đi vòng vòng.",
+  "Tự nhiên thấy nhớ. Kỳ ha.",
+  "Cuối tuần này tính đi đâu chưa?",
+  "Không có gì đâu. Mở ra coi em còn đây không thôi.",
+  "Mai gặp nha."
+];
+
+/* ==================================================================
+   Hết khu vực chỉnh nội dung
+   ================================================================== */
+
+
+/* ---------------- ẩn ô ảnh chưa có file ----------------
+   Ô nào không tải được ảnh thì ẩn đi, không để vỡ layout.
+   Nếu KHÔNG có ảnh album nào thì ẩn luôn cả mục "Ảnh". */
+(function () {
+  var boxes = document.querySelectorAll('[data-photo]');
+  var albumBoxes = document.querySelectorAll('.album [data-photo]');
+  var albumTotal = albumBoxes.length;
+  var albumDone = 0, albumOk = 0;
+
+  function albumCheck() {
+    if (albumDone < albumTotal) return;
+    var sec = document.getElementById('album');
+    if (albumOk === 0 && sec) sec.style.display = 'none';
+  }
+
+  Array.prototype.forEach.call(boxes, function (box) {
+    var img = box.querySelector('img');
+    var isAlbum = box.parentNode && box.parentNode.classList.contains('album');
+    var settled = false;
+
+    box.style.display = 'none';   // ẩn trước, tải được mới hiện
+
+    function ok() {
+      if (settled) return;
+      settled = true;
+      box.style.display = '';
+      if (isAlbum) { albumDone++; albumOk++; albumCheck(); }
+    }
+    function fail() {
+      if (settled) return;
+      settled = true;
+      box.style.display = 'none';
+      if (isAlbum) { albumDone++; albumCheck(); }
+    }
+
+    img.addEventListener('load', function () {
+      if (img.naturalWidth > 0) ok(); else fail();
+    });
+    img.addEventListener('error', fail);
+
+    // ảnh có sẵn trong cache thì hai sự kiện trên không bắn nữa
+    if (img.complete) {
+      if (img.naturalWidth > 0) ok(); else fail();
+    }
+  });
+
+  albumCheck();   // phòng khi trang không có ô album nào
+})();
+
+/* ---------------- starfield ---------------- */
+(function () {
+  var sky = document.getElementById('sky');
+  var frag = document.createDocumentFragment();
+  var i, st;
+
+  for (i = 0; i < 70; i++) {
+    st = document.createElement('div');
+    st.className = 'star';
+    var size = Math.random() * 2 + 1;
+    st.style.width = size + 'px';
+    st.style.height = size + 'px';
+    st.style.left = Math.random() * 100 + '%';
+    st.style.top = Math.random() * 100 + '%';
+    st.style.animationDuration = (Math.random() * 3 + 2).toFixed(2) + 's';
+    st.style.animationDelay = (Math.random() * 4).toFixed(2) + 's';
+    frag.appendChild(st);
+  }
+
+  var glyphs = ['❤', '💕', '♥', '💗'];
+  for (i = 0; i < 12; i++) {
+    var hh = document.createElement('div');
+    hh.className = 'fheart';
+    hh.textContent = glyphs[i % glyphs.length];
+    hh.style.left = Math.random() * 100 + '%';
+    hh.style.fontSize = (Math.random() * 14 + 14).toFixed(0) + 'px';
+    hh.style.animationDuration = (Math.random() * 10 + 14).toFixed(1) + 's';
+    hh.style.animationDelay = (Math.random() * 14).toFixed(1) + 's';
+    frag.appendChild(hh);
+  }
+  sky.appendChild(frag);
+})();
+
+/* ---------------- lời nhắn ngẫu nhiên ---------------- */
+(function () {
+  var box = document.getElementById('noteBox');
+  var el = document.getElementById('noteText');
+  var last = -1;
+
+  function pick() {
+    var i;
+    do { i = Math.floor(Math.random() * NOTES.length); }
+    while (NOTES.length > 1 && i === last);
+    last = i;
+    el.style.opacity = 0;
+    setTimeout(function () {
+      el.textContent = NOTES[i];
+      el.style.opacity = 1;
+    }, 250);
+  }
+
+  el.textContent = NOTES[Math.floor(Math.random() * NOTES.length)];
+  box.addEventListener('click', pick);
+})();
+
+/* ---------------- bộ đếm ---------------- */
+(function () {
+  var d = document.getElementById('d'), h = document.getElementById('h'),
+      m = document.getElementById('m'), s = document.getElementById('s');
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function tick() {
+    var diff = Date.now() - START_DATE.getTime();
+    if (diff < 0) diff = 0;
+    var sec = Math.floor(diff / 1000);
+    d.textContent = Math.floor(sec / 86400);
+    h.textContent = pad(Math.floor(sec / 3600) % 24);
+    m.textContent = pad(Math.floor(sec / 60) % 60);
+    s.textContent = pad(sec % 60);
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* ---------------- timeline reveal ---------------- */
+(function () {
+  var items = document.querySelectorAll('.tl-item');
+  if (!('IntersectionObserver' in window)) {
+    Array.prototype.forEach.call(items, function (el) { el.classList.add('show'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); }
+    });
+  }, { threshold: .15 });
+  Array.prototype.forEach.call(items, function (el, i) {
+    el.style.transitionDelay = (i % 3) * 90 + 'ms';
+    io.observe(el);
+  });
+})();
+
+/* ---------------- bí mật ẩn: bấm 43 lần vào mốc tương lai ---------------- */
+(function () {
+  var item = document.getElementById('futureItem');
+  var list = document.getElementById('wishlist');
+  var hint = document.getElementById('futureHint');
+
+  var CAN = 43;        // số lần bấm để mở
+  var count = 0;
+  var opened = false;
+  var resetTimer = null;
+
+  item.addEventListener('click', function () {
+    if (opened) return;          // mở rồi thì thôi, không thu lại nữa
+
+    count++;
+
+    // bấm chậm quá (nghỉ 3 giây) thì coi như bỏ cuộc, đếm lại từ đầu
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(function () {
+      count = 0;
+      item.classList.remove('warm');
+      hint.classList.remove('show');
+      hint.textContent = '';
+    }, 3000);
+
+    // im lặng hoàn toàn cho tới khi gần chạm mốc
+    if (count >= CAN) {
+      opened = true;
+      clearTimeout(resetTimer);
+      item.classList.remove('warm');
+      hint.classList.remove('show');
+      hint.textContent = '';
+      open();
+      return;
+    }
+
+    if (count >= 30) {
+      // sắp tới rồi, hé lộ chút xíu cho khỏi nản
+      item.classList.add('warm');
+      hint.classList.add('show');
+      hint.textContent = '… ' + (CAN - count);
+    } else if (count >= 15) {
+      item.classList.add('warm');
+    }
+  });
+
+  function open() {
+    list.classList.add('open');
+    var lis = list.querySelectorAll('li');
+    Array.prototype.forEach.call(lis, function (li, i) {
+      li.style.animation = 'none';
+      void li.offsetWidth;
+      li.style.animation = 'wishIn .45s ease forwards';
+      li.style.animationDelay = (i * 80) + 'ms';
+    });
+    setTimeout(function () {
+      list.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 400);
+  }
+})();
+
+/* ---------------- nhạc nền ---------------- */
+var Music = (function () {
+  var audio = document.getElementById('bgm');
+  var btn = document.getElementById('musicBtn');
+  var MAX = 0.55;          // âm lượng tối đa, để nhạc không lấn
+  var fade = null;
+
+  function icon() {
+    var playing = !audio.paused;
+    btn.classList.toggle('off', !playing);
+    btn.textContent = playing ? '♪' : '♪̸';
+    btn.title = playing ? 'Tắt nhạc' : 'Bật nhạc';
+  }
+
+  // tăng dần âm lượng cho êm tai
+  function fadeIn() {
+    clearInterval(fade);
+    fade = setInterval(function () {
+      var v = audio.volume + 0.04;
+      if (v >= MAX) { v = MAX; clearInterval(fade); }
+      try { audio.volume = v; } catch (e) { clearInterval(fade); }
+    }, 120);
+  }
+
+  function play(soft) {
+    audio.volume = soft ? 0 : MAX;
+    var p = audio.play();
+
+    if (p && p.then) {
+      p.then(function () {
+        if (soft) fadeIn();
+        icon();
+      })['catch'](function () {
+        // trình duyệt chặn -> để nút ở trạng thái tắt, chờ bấm tay
+        audio.volume = MAX;
+        icon();
+      });
+    } else {
+      if (soft) fadeIn();
+      icon();
+    }
+  }
+
+  // gọi khi bấm nút mở khoá (cú chạm hợp lệ nên trình duyệt cho phát)
+  function start() {
+    btn.classList.add('show');
+    play(true);
+  }
+
+  btn.addEventListener('click', function () {
+    if (audio.paused) {
+      play(false);
+    } else {
+      clearInterval(fade);
+      audio.pause();
+      icon();
+    }
+  });
+
+  audio.addEventListener('play', icon);
+  audio.addEventListener('pause', icon);
+
+  // thiếu file hoặc file hỏng -> ẩn nút luôn cho gọn
+  audio.addEventListener('error', function () { btn.classList.remove('show'); });
+
+  return { start: start };
+})();
+
+/* ---------------- GATE: bộ câu hỏi ---------------- */
+(function () {
+  var gate = document.getElementById('gate');
+  var quiz = document.getElementById('gateQuiz');
+  var finalBox = document.getElementById('gateFinal');
+  var progress = document.getElementById('gateProgress');
+  var qNum = document.getElementById('qNum');
+  var qText = document.getElementById('qText');
+  var qOpts = document.getElementById('qOpts');
+  var msg = document.getElementById('gateMsg');
+  var btnEnter = document.getElementById('btnEnter');
+
+  function shuffle(arr) {
+    var a = arr.slice(), i, j, t;
+    for (i = a.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  var lostBox = document.getElementById('gateLost');
+
+  var total = Math.min(SO_CAU_HOI, QUESTIONS.length);   // số vạch trên thanh
+  var need  = Math.min(SO_CAU_DUNG, total);             // đúng bấy nhiêu là vào
+
+  /* pool = kho câu hỏi đã trộn. Lấy dần từ đầu:
+     - đúng  -> tính là 1 câu đã qua
+     - sai   -> bỏ câu đó, lấy câu kế tiếp thay vào
+     Sai đủ SO_LAN_SAI lần -> mất lượt. */
+  var pool = shuffle(QUESTIONS);
+  var cursor = 0;      // vị trí câu đang hỏi trong pool
+  var passed = 0;      // số câu đã trả lời đúng
+  var wrong = 0;       // tổng số lần sai
+  var over = false;    // khoá tạm khi đang chuyển câu
+
+  /* Thanh có số vạch = số câu cần đúng để vào được. */
+  var slots = need;
+  for (var i = 0; i < slots; i++) {
+    var gp = document.createElement('div');
+    gp.className = 'gp';
+    progress.appendChild(gp);
+  }
+  var dots = progress.children;
+
+  /* Tô vạch: xanh = đúng, đỏ = sai.
+     Câu đúng đẩy con trỏ sang vạch kế tiếp; câu sai chỉ tô đỏ vạch
+     hiện tại rồi để nguyên, nên câu làm lại sẽ ghi đè lên chính vạch đó. */
+  function mark(good) {
+    var slot = Math.min(passed, slots - 1);
+    var el = dots[slot];
+    if (!el) return;
+    el.classList.remove('ok', 'bad');
+    el.classList.add(good ? 'ok' : 'bad');
+  }
+
+  function render() {
+    // hết câu trong kho mà chưa đủ -> cho qua luôn, tránh kẹt
+    if (cursor >= pool.length) { finish(); return; }
+
+    var item = pool[cursor];
+    qNum.textContent = 'Đúng ' + passed + ' / ' + need
+                     + (wrong ? '   ·   sai ' + wrong + '/' + SO_LAN_SAI : '');
+    qText.textContent = item.q;
+    msg.textContent = '';
+    qOpts.innerHTML = '';
+
+    // trộn đáp án, nhớ đâu là đáp án đúng
+    var correctText = item.a[item.c];
+    var opts = shuffle(item.a);
+
+    opts.forEach(function (txt) {
+      var b = document.createElement('button');
+      b.className = 'opt';
+      b.type = 'button';
+      b.textContent = txt;
+
+      b.addEventListener('click', function () {
+        if (over) return;
+        over = true;                        // khoá lại, tránh bấm nhiều nút
+
+        var right = (txt === correctText);
+
+        mark(right);        // tô vạch trước, lúc này passed chưa đổi
+
+        if (right) {
+          b.classList.add('right');
+          passed++;
+        } else {
+          b.classList.add('wrong');
+          wrong++;
+          // chỉ ra cho thấy đâu mới là đáp án đúng
+          Array.prototype.forEach.call(qOpts.children, function (el) {
+            if (el.textContent === correctText) el.classList.add('right');
+          });
+          msg.textContent = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)];
+        }
+
+        cursor++;           // dù đúng hay sai đều sang câu mới
+
+        setTimeout(function () {
+          if (wrong >= SO_LAN_SAI) { lose(); return; }
+          over = false;
+          if (passed >= need) finish(); else render();
+        }, right ? 480 : 1100);
+      });
+
+      qOpts.appendChild(b);
+    });
+  }
+
+  function finish() {
+    quiz.style.display = 'none';
+    finalBox.classList.add('show');
+  }
+
+  function lose() {
+    quiz.style.display = 'none';
+    gate.classList.add('lost-bg');
+    lostBox.classList.add('show');
+  }
+
+  btnEnter.addEventListener('click', function () {
+    // 1. nhạc — bắt đầu ngay trong cú chạm này để trình duyệt cho phép
+    Music.start();
+
+    // 2. mở màn sân khấu
+    var fx = document.getElementById('stagefx');
+    fx.classList.add('run');
+
+    // 3. tắt gate, mở khoá cuộn
+    gate.classList.add('done');
+    document.body.classList.remove('locked');
+    window.scrollTo(0, 0);
+
+    setTimeout(function () { gate.style.display = 'none'; }, 800);
+    setTimeout(function () { fx.classList.remove('run'); }, 2800);
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
