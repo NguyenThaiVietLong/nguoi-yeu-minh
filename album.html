@@ -31,7 +31,7 @@
   .sec-head p { color: var(--text-dim); font-style: italic; }
   .album { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
   .ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); position: relative; }
-  .ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
+  .ph img, .ph video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
   .ph:hover img { transform: scale(1.06); }
   .ph .cap {
     position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px;
@@ -60,18 +60,27 @@
     });
   }
 
+  function isVideo(url) { return /\.(mp4|webm|mov)$/i.test(url || ''); }
+
   function wirePhotoBoxes(root) {
     var boxes = root.querySelectorAll('[data-photo]');
     Array.prototype.forEach.call(boxes, function (box) {
-      var img = box.querySelector('img');
-      if (!img) return;
+      var media = box.querySelector('img,video');
+      if (!media) return;
       var settled = false;
       box.style.display = 'none';
       function ok() { if (!settled) { settled = true; box.style.display = ''; } }
       function fail() { if (!settled) { settled = true; box.style.display = 'none'; } }
-      img.addEventListener('load', function () { if (img.naturalWidth > 0) ok(); else fail(); });
-      img.addEventListener('error', fail);
-      if (img.complete) { if (img.naturalWidth > 0) ok(); else fail(); }
+
+      if (media.tagName === 'VIDEO') {
+        media.addEventListener('loadeddata', ok);
+        media.addEventListener('error', fail);
+        if (media.readyState >= 2) ok();
+        return;
+      }
+      media.addEventListener('load', function () { if (media.naturalWidth > 0) ok(); else fail(); });
+      media.addEventListener('error', fail);
+      if (media.complete) { if (media.naturalWidth > 0) ok(); else fail(); }
     });
   }
 
@@ -99,7 +108,10 @@
       }
       grid.innerHTML = photos.map(function (p) {
         var cap = p.caption ? '<div class="cap">' + esc(p.caption) + '</div>' : '';
-        return '<div class="ph" data-photo><img src="' + esc(p.url) + '" alt="">' + cap + '</div>';
+        var media = isVideo(p.url)
+          ? '<video src="' + esc(p.url) + '" controls muted playsinline preload="metadata"></video>'
+          : '<img src="' + esc(p.url) + '" alt="">';
+        return '<div class="ph" data-photo>' + media + cap + '</div>';
       }).join('');
       wirePhotoBoxes(grid);
     })

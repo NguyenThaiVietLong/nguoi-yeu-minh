@@ -41,7 +41,34 @@
     "dateLabel": "23 · 08 · 2026",
     "title": "First date",
     "content": "Cà phê làm việc, xem phim, rồi ăn trong Gigamall. Gọi là buổi hẹn đầu tiên cho trang trọng, chứ thật ra mình đã thân từ mấy hôm trước rồi.",
-    "cover": "images/tl5.jpg",
+    "cover": "images/23.8/1244d0b898f518ab41e427.jpg",
     "albumId": "a-nhung-ngay-dau"
+  },
+  {
+    "id": "j-2026-08-28",
+    "date": "2026-08-28",
+    "dateLabel": "28 · 08 · 2026",
+    "title": "Đi mall, rồi Bamos Coffee",
+    "content": "Dắt nhau vào trung tâm thương mại dạo một vòng, rồi ghé Bamos Coffee ngồi nói chuyện.",
+    "cover": "images/28.8/05b37842300fb051e91e45.jpg",
+    "albumId": "a-28-08"
+  },
+  {
+    "id": "j-2026-08-29",
+    "date": "2026-08-29",
+    "dateLabel": "29 · 08 · 2026",
+    "title": "Cà phê, rồi đưa em về quê",
+    "content": "Ngồi cà phê một lúc, sau đó anh chở em về quê.",
+    "cover": "images/29.8/04c551f318be98e0c1af8.jpg",
+    "albumId": "a-29-08"
+  },
+  {
+    "id": "j-2026-09-01",
+    "date": "2026-09-01",
+    "dateLabel": "01 · 09 · 2026",
+    "title": "Về quê, chụp photobooth",
+    "content": "Về quê em, rủ nhau đi chụp photobooth, ăn Dookki, rồi ngồi chơi game với nhau.",
+    "cover": "images/01.09/0797ee95a7d827867ec915.jpg",
+    "albumId": "a-01-09"
   }
 ]

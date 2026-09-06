@@ -204,11 +204,13 @@
     });
   }
 
+  function isVideoUrl(url) { return /\.(mp4|webm|mov)$/i.test(url || ''); }
+
   function wireUploadButton(btn, onDone, statusEl) {
     btn.addEventListener('click', function () {
       var input = document.createElement('input');
       input.type = 'file';
-      input.accept = 'image/*';
+      input.accept = 'image/*,video/*';
       input.onchange = function () {
         var f = input.files[0];
         if (!f) return;
@@ -307,8 +309,11 @@
     var root = document.getElementById('albumEntries');
     root.innerHTML = albumData.map(function (a, i) {
       var photosHtml = (a.photos || []).map(function (p, pi) {
+        var preview = !p.url ? '<span class="pv"></span>'
+          : isVideoUrl(p.url) ? '<span class="pv" style="display:flex;align-items:center;justify-content:center;font-size:18px">🎬</span>'
+          : '<img class="pv" src="../' + p.url + '" alt="">';
         return '<div class="photo-row" data-pi="' + pi + '">' +
-          (p.url ? '<img class="pv" src="../' + p.url + '" alt="">' : '<span class="pv"></span>') +
+          preview +
           '<input type="text" data-pf="url" placeholder="đường dẫn ảnh" value="' + (p.url || '') + '">' +
           '<input type="text" data-pf="caption" placeholder="chú thích" value="' + (p.caption || '') + '">' +
           '<button class="secondary filebtn" data-pact="upload">Tải lên</button>' +
