@@ -252,11 +252,13 @@
   .note .refresh { font-family: 'Space Mono', monospace; font-size: 15px; color: var(--gold); flex-shrink: 0; }
 
   /* ---- counter ---- */
-  .counter { margin-top: 26px; display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
+  .counter { margin-top: 30px; display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
   .cbox { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 15px; min-width: 78px; }
   .cbox b { display: block; font-family: 'Space Mono', monospace; font-size: 24px; color: var(--gold); font-weight: 700; line-height: 1.2; }
   .cbox span { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); }
   .counter-cap { margin-top: 12px; font-size: 15px; color: var(--text-dim); font-style: italic; }
+  .counter-block { text-align: center; margin-bottom: clamp(30px,6vw,48px); }
+  .counter-block .counter { margin-top: 0; }
 
   /* ================================================================
      5. SECTIONS
@@ -466,6 +468,11 @@
 
     <p class="tagline">Bắt đầu từ một cú quẹt phải, và vẫn chưa có ý định dừng <span class="heartbeat">❤</span></p>
 
+    <div class="note" id="noteBox" title="Bấm để đổi câu khác">
+      <span id="noteText"></span>
+      <span class="refresh">↻</span>
+    </div>
+
     <div class="counter" data-start="met">
       <div class="cbox"><b data-u="d">—</b><span>Ngày</span></div>
       <div class="cbox"><b data-u="h">—</b><span>Giờ</span></div>
@@ -473,19 +480,6 @@
       <div class="cbox"><b data-u="s">—</b><span>Giây</span></div>
     </div>
     <p class="counter-cap">kể từ 16.08.2026 — ngày đầu tiên gặp nhau trên Bumble</p>
-
-    <div class="counter" data-start="dating">
-      <div class="cbox"><b data-u="d">—</b><span>Ngày</span></div>
-      <div class="cbox"><b data-u="h">—</b><span>Giờ</span></div>
-      <div class="cbox"><b data-u="m">—</b><span>Phút</span></div>
-      <div class="cbox"><b data-u="s">—</b><span>Giây</span></div>
-    </div>
-    <p class="counter-cap">kể từ 09.09.2026 — ngày chính thức quen nhau</p>
-
-    <div class="note" id="noteBox" title="Bấm để đổi câu khác">
-      <span id="noteText"></span>
-      <span class="refresh">↻</span>
-    </div>
   </header>
 
   <div class="rule"></div>
@@ -551,6 +545,16 @@
 
   <!-- ================= LETTER ================= -->
   <section id="loi-nhan">
+    <div class="counter-block">
+      <div class="counter" data-start="dating">
+        <div class="cbox"><b data-u="d">—</b><span>Ngày</span></div>
+        <div class="cbox"><b data-u="h">—</b><span>Giờ</span></div>
+        <div class="cbox"><b data-u="m">—</b><span>Phút</span></div>
+        <div class="cbox"><b data-u="s">—</b><span>Giây</span></div>
+      </div>
+      <p class="counter-cap">kể từ 09.09.2026 — ngày chính thức quen nhau</p>
+    </div>
+
     <div class="sec-head">
       <h2>Lời nhắn</h2>
       <p>Gửi Hoàng Yến</p>
