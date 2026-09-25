@@ -252,7 +252,7 @@
   .note .refresh { font-family: 'Space Mono', monospace; font-size: 15px; color: var(--gold); flex-shrink: 0; }
 
   /* ---- counter ---- */
-  .counter { margin-top: 30px; display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
+  .counter { margin-top: 26px; display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
   .cbox { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 15px; min-width: 78px; }
   .cbox b { display: block; font-family: 'Space Mono', monospace; font-size: 24px; color: var(--gold); font-weight: 700; line-height: 1.2; }
   .cbox span { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); }
@@ -466,18 +466,26 @@
 
     <p class="tagline">Bắt đầu từ một cú quẹt phải, và vẫn chưa có ý định dừng <span class="heartbeat">❤</span></p>
 
+    <div class="counter" data-start="met">
+      <div class="cbox"><b data-u="d">—</b><span>Ngày</span></div>
+      <div class="cbox"><b data-u="h">—</b><span>Giờ</span></div>
+      <div class="cbox"><b data-u="m">—</b><span>Phút</span></div>
+      <div class="cbox"><b data-u="s">—</b><span>Giây</span></div>
+    </div>
+    <p class="counter-cap">kể từ 16.08.2026 — ngày đầu tiên gặp nhau trên Bumble</p>
+
+    <div class="counter" data-start="dating">
+      <div class="cbox"><b data-u="d">—</b><span>Ngày</span></div>
+      <div class="cbox"><b data-u="h">—</b><span>Giờ</span></div>
+      <div class="cbox"><b data-u="m">—</b><span>Phút</span></div>
+      <div class="cbox"><b data-u="s">—</b><span>Giây</span></div>
+    </div>
+    <p class="counter-cap">kể từ 09.09.2026 — ngày chính thức quen nhau</p>
+
     <div class="note" id="noteBox" title="Bấm để đổi câu khác">
       <span id="noteText"></span>
       <span class="refresh">↻</span>
     </div>
-
-    <div class="counter">
-      <div class="cbox"><b id="d">—</b><span>Ngày</span></div>
-      <div class="cbox"><b id="h">—</b><span>Giờ</span></div>
-      <div class="cbox"><b id="m">—</b><span>Phút</span></div>
-      <div class="cbox"><b id="s">—</b><span>Giây</span></div>
-    </div>
-    <p class="counter-cap">kể từ 09.09.2026 — ngày chính thức quen nhau</p>
   </header>
 
   <div class="rule"></div>
@@ -568,8 +576,11 @@
    ⚙️  KHU VỰC CHỈNH NỘI DUNG — sửa hết ở đây, không cần đụng chỗ khác
    ================================================================== */
 
-/* --- Ngày bắt đầu (năm, tháng-1, ngày) --- */
-var START_DATE = new Date(2026, 8, 9, 0, 0, 0);    // 09/09/2026 — ngày chính thức quen nhau
+/* --- Các mốc đếm ngày (năm, tháng-1, ngày) --- */
+var START_DATES = {
+  met:    new Date(2026, 7, 16, 0, 0, 0),   // 16/08/2026 — ngày gặp nhau trên Bumble
+  dating: new Date(2026, 8, 9, 0, 0, 0)     // 09/09/2026 — ngày chính thức quen nhau
+};
 
 /* --- Kho câu hỏi khoá. Mỗi lần vào random 5 câu.
        a: mảng lựa chọn, c: vị trí đáp án đúng (đếm từ 0) --- */
@@ -751,19 +762,22 @@ document.addEventListener('click', function (e) {
 
 /* ---------------- bộ đếm ---------------- */
 (function () {
-  var d = document.getElementById('d'), h = document.getElementById('h'),
-      m = document.getElementById('m'), s = document.getElementById('s');
+  var counters = document.querySelectorAll('.counter[data-start]');
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
   function tick() {
-    var diff = Date.now() - START_DATE.getTime();
-    if (diff < 0) diff = 0;
-    var sec = Math.floor(diff / 1000);
-    d.textContent = Math.floor(sec / 86400);
-    h.textContent = pad(Math.floor(sec / 3600) % 24);
-    m.textContent = pad(Math.floor(sec / 60) % 60);
-    s.textContent = pad(sec % 60);
+    Array.prototype.forEach.call(counters, function (c) {
+      var start = START_DATES[c.getAttribute('data-start')];
+      if (!start) return;
+      var diff = Date.now() - start.getTime();
+      if (diff < 0) diff = 0;
+      var sec = Math.floor(diff / 1000);
+      c.querySelector('[data-u="d"]').textContent = Math.floor(sec / 86400);
+      c.querySelector('[data-u="h"]').textContent = pad(Math.floor(sec / 3600) % 24);
+      c.querySelector('[data-u="m"]').textContent = pad(Math.floor(sec / 60) % 60);
+      c.querySelector('[data-u="s"]').textContent = pad(sec % 60);
+    });
   }
   tick();
   setInterval(tick, 1000);
