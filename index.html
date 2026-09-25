@@ -282,6 +282,7 @@
   .tl-item p { color: var(--text-dim); }
   .tl-photo { margin-top: 12px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); max-width: 420px; }
   .tl-photo img { width: 100%; display: block; }
+  .hero-photo img, .tl-photo img { cursor: zoom-in; }
 
   /* ---- future / secret ---- */
   /* mốc tương lai: nhìn y hệt các mốc khác, không lộ gợi ý gì */
@@ -561,13 +562,14 @@
   <div class="wrap">Made with <span class="heartbeat">❤</span> by Long · dành riêng cho Yến</div>
 </footer>
 
+<script src="lightbox.js"></script>
 <script>
 /* ==================================================================
    ⚙️  KHU VỰC CHỈNH NỘI DUNG — sửa hết ở đây, không cần đụng chỗ khác
    ================================================================== */
 
 /* --- Ngày bắt đầu (năm, tháng-1, ngày) --- */
-var START_DATE = new Date(2026, 7, 16, 0, 0, 0);   // 16/08/2026
+var START_DATE = new Date(2026, 8, 9, 0, 0, 0);    // 09/09/2026 — ngày chính thức quen nhau
 
 /* --- Kho câu hỏi khoá. Mỗi lần vào random 5 câu.
        a: mảng lựa chọn, c: vị trí đáp án đúng (đếm từ 0) --- */
@@ -685,6 +687,12 @@ function wirePhotoBoxes(root) {
   });
 }
 wirePhotoBoxes(document);
+
+/* ---------------- bấm ảnh hero / timeline để xem to ---------------- */
+document.addEventListener('click', function (e) {
+  var img = e.target.closest('.hero-photo img, .tl-photo img');
+  if (img) Lightbox.open([{ url: img.getAttribute('src') }], 0);
+});
 
 /* ---------------- starfield ---------------- */
 (function () {

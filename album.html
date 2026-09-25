@@ -32,7 +32,18 @@
   .album { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
   .ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); position: relative; }
   .ph img, .ph video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
-  .ph:hover img { transform: scale(1.06); }
+  .ph { cursor: zoom-in; }
+  .ph:hover img, .ph:hover video { transform: scale(1.06); }
+  .ph .play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 44px; height: 44px; border-radius: 50%; pointer-events: none;
+    background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.5);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ph .play::after {
+    content: ""; margin-left: 4px; border-style: solid;
+    border-width: 8px 0 8px 13px; border-color: transparent transparent transparent #fff;
+  }
   .ph .cap {
     position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px;
     font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #fff;
@@ -52,6 +63,7 @@
   <p class="album-notfound" id="notFound" style="display:none">Không tìm thấy album này.</p>
 </div>
 
+<script src="lightbox.js"></script>
 <script>
 (function () {
   function esc(s) {
@@ -73,9 +85,10 @@
       function fail() { if (!settled) { settled = true; box.style.display = 'none'; } }
 
       if (media.tagName === 'VIDEO') {
-        media.addEventListener('loadeddata', ok);
+        // iOS Safari không bắn 'loadeddata' khi preload=metadata -> dùng 'loadedmetadata'
+        media.addEventListener('loadedmetadata', ok);
         media.addEventListener('error', fail);
-        if (media.readyState >= 2) ok();
+        if (media.readyState >= 1) ok();
         return;
       }
       media.addEventListener('load', function () { if (media.naturalWidth > 0) ok(); else fail(); });
@@ -106,14 +119,29 @@
         document.getElementById('notFound').style.display = '';
         return;
       }
-      grid.innerHTML = photos.map(function (p) {
+      grid.innerHTML = photos.map(function (p, i) {
         var cap = p.caption ? '<div class="cap">' + esc(p.caption) + '</div>' : '';
+        // #t=0.1 để trình duyệt (nhất là iOS) hiện khung hình đầu làm thumbnail
         var media = isVideo(p.url)
-          ? '<video src="' + esc(p.url) + '" controls muted playsinline preload="metadata"></video>'
+          ? '<video src="' + esc(p.url) + '#t=0.1" muted playsinline preload="metadata"></video><span class="play"></span>'
           : '<img src="' + esc(p.url) + '" alt="">';
-        return '<div class="ph" data-photo>' + media + cap + '</div>';
+        return '<div class="ph" data-photo data-i="' + i + '">' + media + cap + '</div>';
       }).join('');
       wirePhotoBoxes(grid);
+
+      grid.addEventListener('click', function (e) {
+        var box = e.target.closest('[data-i]');
+        if (!box) return;
+        // chỉ lướt qua các ô tải được (ô lỗi đã bị ẩn)
+        var visible = [], start = 0;
+        photos.forEach(function (p, i) {
+          var b = grid.querySelector('[data-i="' + i + '"]');
+          if (b && b.style.display === 'none') return;
+          if (i === +box.getAttribute('data-i')) start = visible.length;
+          visible.push(p);
+        });
+        Lightbox.open(visible, start);
+      });
     })
     ['catch'](function () {
       document.getElementById('albumTitle').textContent = 'Không tải được album';
