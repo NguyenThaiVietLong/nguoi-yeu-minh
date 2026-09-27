@@ -965,7 +965,12 @@ var Music = (function () {
   var fade = null;
 
   // danh sách bài, hết bài này tự chuyển bài kế, xoay vòng
-  var TRACKS = ['music/the-gioi-cua-anh.mp3', 'music/giai-cuu-the-gioi.mp3'];
+  var TRACKS = [
+    'music/the-gioi-cua-anh.mp3',
+    'music/giai-cuu-the-gioi.mp3',
+    'music/1000-thac-mac.mp3',
+    'music/nguoi-im-lang-gap-nguoi-hay-noi.mp3'
+  ];
   var track = 0;
   audio.addEventListener('ended', function () {
     track = (track + 1) % TRACKS.length;
