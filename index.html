@@ -442,7 +442,7 @@
 
 <div id="sky"></div>
 
-<audio id="bgm" loop preload="auto" src="music/the-gioi-cua-anh.mp3"></audio>
+<audio id="bgm" preload="auto" src="music/the-gioi-cua-anh.mp3"></audio>
 <button id="musicBtn" title="Bật/tắt nhạc">♪</button>
 
 <nav>
@@ -963,6 +963,15 @@ var Music = (function () {
   var btn = document.getElementById('musicBtn');
   var MAX = 0.55;          // âm lượng tối đa, để nhạc không lấn
   var fade = null;
+
+  // danh sách bài, hết bài này tự chuyển bài kế, xoay vòng
+  var TRACKS = ['music/the-gioi-cua-anh.mp3', 'music/giai-cuu-the-gioi.mp3'];
+  var track = 0;
+  audio.addEventListener('ended', function () {
+    track = (track + 1) % TRACKS.length;
+    audio.src = TRACKS[track];
+    audio.play()['catch'](function () {});
+  });
 
   function icon() {
     var playing = !audio.paused;
