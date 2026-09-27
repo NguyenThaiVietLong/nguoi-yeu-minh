@@ -442,7 +442,7 @@
 
 <div id="sky"></div>
 
-<audio id="bgm" preload="auto" src="music/the-gioi-cua-anh.mp3"></audio>
+<audio id="bgm" preload="auto"></audio>
 <button id="musicBtn" title="Bật/tắt nhạc">♪</button>
 
 <nav>
@@ -977,10 +977,24 @@ var Music = (function () {
     'music/1000-thac-mac.mp3',
     'music/nguoi-im-lang-gap-nguoi-hay-noi.mp3'
   ];
+  // trộn thứ tự mỗi lần vào trang; hết một vòng thì trộn lại,
+  // tránh để bài vừa nghe xong phát lại ngay
+  function shuffled(last) {
+    var arr = TRACKS.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    if (arr.length > 1 && arr[0] === last) arr.push(arr.shift());
+    return arr;
+  }
+  var queue = shuffled();
   var track = 0;
+  audio.src = queue[0];
   audio.addEventListener('ended', function () {
-    track = (track + 1) % TRACKS.length;
-    audio.src = TRACKS[track];
+    track++;
+    if (track >= queue.length) { queue = shuffled(queue[queue.length - 1]); track = 0; }
+    audio.src = queue[track];
     audio.play()['catch'](function () {});
   });
 
